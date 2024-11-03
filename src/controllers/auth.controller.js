@@ -1,4 +1,4 @@
-const { status: httpStatus } = require("http-status");
+const status = require("http-status");
 const catchAsync = require("../utils/catchAsync");
 const { loginUserWithEmailAndPassword } = require("../services/auth.service");
 const config = require("../config/config");
@@ -11,7 +11,7 @@ const login = catchAsync(async (req, res) => {
   const token = jwt.sign({ pid: user.id, role: user.role }, config.jwt.secret, {
     expiresIn: "1h",
   });
-  res.send(generateResponse(httpStatus.OK, { user: user, token: token }));
+  res.send(generateResponse(status.OK, { user: user, token: token }));
 });
 
 module.exports = {

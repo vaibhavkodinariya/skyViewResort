@@ -1,19 +1,18 @@
 const Room = require("../models/room.model");
 const ApiError = require("../utils/ApiError");
-const { status: httpStatus } = require("http-status");
+const status = require("http-status");
 const fs = require("fs");
 const path = require("path");
 
 const getRoomById = async (id) => {
   const room = await Room.findById(id).lean();
-  if (!room) throw new ApiError(httpStatus.NOT_FOUND, "Room Not Found");
+  if (!room) throw new ApiError(status.NOT_FOUND, "Room Not Found");
   return room;
 };
 
 const createRoom = async (roomNumber, photos, price) => {
   const isExists = await Room.findOne({ roomNumber: roomNumber });
-  if (isExists)
-    throw new ApiError(httpStatus.BAD_REQUEST, "Room Already Exists");
+  if (isExists) throw new ApiError(status.BAD_REQUEST, "Room Already Exists");
 
   const newRoom = new Room({
     roomNumber,
@@ -27,7 +26,7 @@ const createRoom = async (roomNumber, photos, price) => {
 const updateRoom = async (roomNumber, price, photos, avaibility) => {
   const room = await Room.findOne({ roomNumber: roomNumber });
 
-  if (!room) throw new ApiError(httpStatus.NOT_FOUND, "Room Not Found");
+  if (!room) throw new ApiError(status.NOT_FOUND, "Room Not Found");
 
   room.photos.forEach((oldPhoto) => {
     const oldPhotoPath = path.join(__dirname, "../public", oldPhoto.url);

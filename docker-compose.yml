@@ -1,32 +1,24 @@
-version: '3'
-
+version: "3"
 services:
-  node-app:
+  app:
     build: .
-    image: node-app
-    environment:
-      - MONGODB_URL=mongodb://mongodb:27017/node-boilerplate
     ports:
-      - '3000:3000'
+      - "3000:3000"
     depends_on:
-      - mongodb
+      - mongo
+    env_file:
+      - .env
     volumes:
-      - .:/usr/src/node-app
-    networks:
-      - node-network
+      - ./src/public:/backend/src/public
+    restart: always
 
-  mongodb:
-    image: mongo:4.2.1-bionic
+  mongo:
+    image: mongo:latest
     ports:
-      - '27017:27017'
+      - "27017:27017"
     volumes:
-      - dbdata:/data/db
-    networks:
-      - node-network
+      - ./mongo-data:/data/db
+    restart: always
 
 volumes:
-  dbdata:
-
-networks:
-  node-network:
-    driver: bridge
+  mongo-data:

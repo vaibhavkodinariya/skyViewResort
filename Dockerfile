@@ -1,15 +1,20 @@
-FROM node:alpine
+# Use the official Node.js v21.5.0 image
+FROM node:21.5.0
 
-RUN mkdir -p /usr/src/node-app && chown -R node:node /usr/src/node-app
+# Set the working directory in the container
+WORKDIR /backend
 
-WORKDIR /usr/src/node-app
+# Copy package.json and package-lock.json into the container
+COPY package*.json ./
 
-COPY package.json yarn.lock ./
+# Install dependencies inside the container
+RUN npm install
 
-USER node
+# Copy the rest of your application code
+COPY . .
 
-RUN yarn install --pure-lockfile
-
-COPY --chown=node:node . .
-
+# Expose the application port
 EXPOSE 3000
+
+# Start the application
+CMD ["npm", "start"]

@@ -1,0 +1,9 @@
+# Ignore node modules - they will be installed fresh in the container
+node_modules
+
+# Ignore environment files if sensitive information shouldn’t be in the image
+.env
+
+# Ignore Docker-related files
+Dockerfile
+.dockerignore

@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const { status: httpStatus } = require("http-status");
+const status = require("http-status");
 const pick = require("../utils/pick");
 const ApiError = require("../utils/ApiError");
 
@@ -50,7 +50,7 @@ const validate = (schema) => (req, res, next) => {
 
   // If there are any errors, throw an ApiError
   if (errors.length > 0) {
-    return next(new ApiError(httpStatus.BAD_REQUEST, errors.join(", ")));
+    return next(new ApiError(status.BAD_REQUEST, errors.join(", ")));
   }
 
   return next();

@@ -1,14 +1,12 @@
 const passport = require("passport");
-const { status: httpStatus } = require("http-status");
+const status = require("http-status");
 const ApiError = require("../utils/ApiError");
 const { roles } = require("../config/roles");
 
 const verifyCallback =
   (req, resolve, reject, requiredRights) => async (err, user, info) => {
     if (err || info || !user) {
-      return reject(
-        new ApiError(httpStatus.UNAUTHORIZED, "Please authenticate")
-      );
+      return reject(new ApiError(status.UNAUTHORIZED, "Please authenticate"));
     }
     req.user = user;
 
@@ -17,7 +15,7 @@ const verifyCallback =
       const hasRequiredRights = requiredRights.includes(userRights);
 
       if (!hasRequiredRights && req.params.userId !== user.id) {
-        return reject(new ApiError(httpStatus.FORBIDDEN, "Forbidden"));
+        return reject(new ApiError(status.FORBIDDEN, "Forbidden"));
       }
     }
 

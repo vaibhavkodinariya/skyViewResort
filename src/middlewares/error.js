@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { status: httpStatus } = require("http-status");
+const status = require("http-status");
 const config = require("../config/config");
 const logger = require("../config/logger");
 const ApiError = require("../utils/ApiError");
@@ -13,15 +13,14 @@ const errorConverter = (err, req, res, next) => {
       error.statusCode ||
       error instanceof mongoose.Error ||
       error instanceof multer.MulterError
-        ? httpStatus.BAD_REQUEST
-        : httpStatus.INTERNAL_SERVER_ERROR;
-    const message = error.message || httpStatus[statusCode];
+        ? status.BAD_REQUEST
+        : status.INTERNAL_SERVER_ERROR;
+    const message = error.message || status[statusCode];
     error = new ApiError(statusCode, message, false, err.stack);
   }
   next(error);
 };
-// 1729933752829-fcca79b9-30e5-4e3a-955c-9e7c2e09f5bb-031.jpg
-// 1729933795079-ba7c10c0-6413-41b4-b0d4-3571f2ed7859-031.jpg
+
 // eslint-disable-next-line no-unused-vars
 const errorHandler = async (err, req, res, next) => {
   let { statusCode, message } = err;
@@ -40,8 +39,8 @@ const errorHandler = async (err, req, res, next) => {
   }
 
   if (config.env === "production" && !err.isOperational) {
-    statusCode = httpStatus.INTERNAL_SERVER_ERROR;
-    message = httpStatus[httpStatus.INTERNAL_SERVER_ERROR];
+    statusCode = status.INTERNAL_SERVER_ERROR;
+    message = status[status.INTERNAL_SERVER_ERROR];
   }
 
   res.locals.errorMessage = err.message;

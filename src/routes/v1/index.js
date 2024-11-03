@@ -3,6 +3,7 @@ const authRoute = require("./auth.route");
 const userRoute = require("./user.route");
 const roomRoute = require("./room.route");
 const bookingRoute = require("./booking.route");
+const stockRoute = require("./stock.route");
 
 const router = express.Router();
 
@@ -22,6 +23,10 @@ const defaultRoutes = [
   {
     path: "/bookings",
     route: bookingRoute,
+  },
+  {
+    path: "/stocks",
+    route: stockRoute,
   },
 ];
 

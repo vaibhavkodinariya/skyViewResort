@@ -43,14 +43,17 @@ const errorHandler = async (err, req, res, next) => {
     message = status[status.INTERNAL_SERVER_ERROR];
   }
 
-  logger.error(`Error : ${err}`);
-
   res.locals.errorMessage = err.message;
 
   const response = {
     message,
     ...(config.env === "development" && { stack: err.stack }),
   };
+  logger.error(
+    `Error : ${
+      config.env === "production" && JSON.stringify({ stack: err.stack })
+    }`
+  );
 
   if (config.env === "development") {
     logger.error(err);

@@ -16,6 +16,7 @@ const router = express.Router();
 
 router.post(
   "/",
+  auth(roles.bhagwan),
   uploadMiddleware({
     folderName: "rooms",
     maxFiles: 5,
@@ -26,6 +27,7 @@ router.post(
 );
 router.put(
   "/:roomNumber",
+  auth(roles.hotelManager, roles.admin, roles.bhagwan),
   uploadMiddleware({
     folderName: "rooms",
     maxFiles: 5,
@@ -35,7 +37,15 @@ router.put(
   editRoom
 );
 
-router.get("/:roomId", getRoomDetails);
-router.get("/", getAllRooms);
+router.get(
+  "/:roomId",
+  auth(roles.hotelManager, roles.admin, roles.bhagwan),
+  getRoomDetails
+);
+router.get(
+  "/",
+  auth(roles.hotelManager, roles.admin, roles.bhagwan),
+  getAllRooms
+);
 
 module.exports = router;

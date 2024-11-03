@@ -5,7 +5,6 @@ const logger = require("../config/logger");
 const ApiError = require("../utils/ApiError");
 const multer = require("multer");
 const fs = require("fs").promises;
-
 const errorConverter = (err, req, res, next) => {
   let error = err;
   if (!(error instanceof ApiError)) {
@@ -32,6 +31,7 @@ const errorHandler = async (err, req, res, next) => {
             await fs.unlink(file.path);
           }
         } catch (unlinkError) {
+          logger.error(`Failed to delete file: ${unlinkError.message}`);
           console.error(`Failed to delete file: ${unlinkError.message}`);
         }
       })
@@ -42,6 +42,8 @@ const errorHandler = async (err, req, res, next) => {
     statusCode = status.INTERNAL_SERVER_ERROR;
     message = status[status.INTERNAL_SERVER_ERROR];
   }
+
+  logger.error(`Error : ${err}`);
 
   res.locals.errorMessage = err.message;
 

@@ -49,6 +49,7 @@ const errorHandler = async (err, req, res, next) => {
     message,
     ...(config.env === "development" && { stack: err.stack }),
   };
+
   logger.error(
     `Error : ${
       config.env === "production" && JSON.stringify({ stack: err.stack })

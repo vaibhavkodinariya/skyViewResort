@@ -3,7 +3,7 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "6000:3000"
     depends_on:
       - mongo
     env_file:
@@ -16,7 +16,7 @@ services:
   mongo:
     image: mongo:latest
     ports:
-      - "27017:27017"
+      - "3866:27017"
     volumes:
       - ./mongo-data:/data/db
     restart: always

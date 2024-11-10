@@ -15,9 +15,6 @@ services:
 
   mongo:
     image: mongo:latest
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGOUSER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGOPWD}
     ports:
       - "3866:27017"
     volumes:

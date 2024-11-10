@@ -3,7 +3,7 @@ const Users = require("../src/models/user.model");
 
 // Default user data for the application's user collection
 const defaultUserData = {
-  username: "Vaibhav",
+  name: "Vaibhav",
   email: "vaibhav@gmail.com",
   password: "vaibhav@123", // Consider hashing this in a real application
   role: "bhagwan",
@@ -41,25 +41,24 @@ const defaultUserData = {
         `MongoDB user '${process.env.MONGOUSER}' created with role readWrite on database '${process.env.DATABASE}'.`
       );
     }
+    try {
+      const targetDb = mongoose.connection.useDb(process.env.DATABASE);
+      const User = targetDb.model("User", Users.schema);
 
-    // Define and connect to the target database
-    const targetDb = mongoose.connection.useDb(process.env.DATABASE);
-    const User = targetDb.model("User", Users.schema);
+      const defaultUserExists = await User.findOne({
+        email: defaultUserData.email,
+      });
 
-    // Check if the default user document exists
-    const existingUser = await User.findOne({
-      username: defaultUserData.username,
-    });
-    if (existingUser) {
-      console.log(
-        `Default application user '${defaultUserData.username}' already exists.`
-      );
-    } else {
-      // Create the default user document in the user collection
-      await User.create(defaultUserData);
-      console.log(
-        `Default application user '${defaultUserData.username}' created in the database '${TARGET_DB}'.`
-      );
+      if (defaultUserExists) {
+        console.log("Default user already exists. No changes made.");
+      } else {
+        // Create the default user
+        const defaultUser = new Users(defaultUserData);
+        await defaultUser.save();
+        console.log("Default user created:", defaultUserData.username);
+      }
+    } catch (error) {
+      console.error("Error in Create Default User", error);
     }
   } catch (error) {
     console.error("Error initializing MongoDB or application user:", error);

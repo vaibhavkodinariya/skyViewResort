@@ -5,9 +5,6 @@ node_modules
 .env*
 !.env*.example
 
-./start.sh
 src/public
 mongo-data
 logs
-
-/start.sh

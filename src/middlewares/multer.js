@@ -4,63 +4,53 @@ const fs = require("fs");
 const ApiError = require("../utils/ApiError");
 const status = require("http-status");
 
-// Reusable middleware function for handling uploads with custom settings
+// Reusable directory creation function
+const ensureDirectoryExists = (dir) =>
+  !fs.existsSync(dir) && fs.mkdirSync(dir, { recursive: true });
+
 function uploadMiddleware({
   folderName,
-  maxFiles = 5,
-  fileSizeLimit = 5 * 1024 * 1024,
+  maxFiles = 10,
+  fileSizeLimit = 10 * 1024 * 1024,
+  singleUpload = false,
 }) {
-  // Configure Multer storage
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      if (!file) {
-        cb(new ApiError(status.BAD_REQUEST, "Photoes are not there"), false);
+      const roomNumber = req.body?.roomNumber || req.params.roomNumber;
+      let dir;
+      if (singleUpload) {
+        dir = path.join(__dirname, "../public/uploads", folderName);
+        console.log("hii", dir);
+      } else {
+        dir = path.join(__dirname, "../public/uploads", folderName, roomNumber);
       }
-
-      const roomNumber = req.body?.roomNumber
-        ? req.body.roomNumber
-        : req.params.roomNumber;
-
-      const dir = path.join(
-        __dirname,
-        "../public/uploads",
-        folderName,
-        roomNumber
-      );
-
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
+      ensureDirectoryExists(dir);
       cb(null, dir);
     },
-    filename: (req, file, cb) => {
-      cb(null, `${Date.now()}-${file.originalname}`);
-    },
+    filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
   });
 
-  // File filter for valid image types
   const fileFilter = (req, file, cb) => {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-    if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(
-        new ApiError(
-          status.BAD_REQUEST,
-          "Invalid file type. Only JPEG, JPG, and PNG are allowed."
-        ),
-        false
-      );
-    }
+    cb(
+      null,
+      allowedTypes.includes(file.mimetype)
+        ? true
+        : new ApiError(
+            status.BAD_REQUEST,
+            "Invalid file type. Only JPEG, JPG, and PNG are allowed."
+          )
+    );
   };
 
-  // Configure and return multer instance
   return multer({
     storage,
     fileFilter,
     limits: { fileSize: fileSizeLimit },
-  }).array("photos", maxFiles);
+  })[singleUpload ? "single" : "array"](
+    singleUpload ? "photo" : "photos",
+    maxFiles
+  );
 }
 
 module.exports = uploadMiddleware;

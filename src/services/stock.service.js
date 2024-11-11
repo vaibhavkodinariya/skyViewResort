@@ -1,15 +1,16 @@
-const httpStatus = require("http-status");
+const status = require("http-status");
 const Stock = require("../models/stock.model");
 const ApiError = require("../utils/ApiError");
 
-exports.updateStock = async (itemId, newQuantity) => {
+exports.updateStock = async (itemId, measure, newQuantity) => {
   if (newQuantity < 0)
-    throw new ApiError(httpStatus.BAD_REQUEST, "Quantity cannot be negative.");
+    throw new ApiError(status.BAD_REQUEST, "Quantity cannot be negative.");
 
   const item = await Stock.findById(itemId);
-  if (!item) throw new ApiError(httpStatus.NOT_FOUND, "Item not found.");
+  if (!item) throw new ApiError(status.NOT_FOUND, "Item not found.");
 
   item.quantity = newQuantity;
+  item.measure = measure;
   await item.save();
 
   return item;
@@ -17,7 +18,7 @@ exports.updateStock = async (itemId, newQuantity) => {
 
 exports.setThreshold = async (itemId, newThreshold) => {
   const item = await Stock.findById(itemId);
-  if (!item) throw new ApiError(httpStatus.NOT_FOUND, "Item not found.");
+  if (!item) throw new ApiError(status.NOT_FOUND, "Item not found.");
 
   item.threshold = newThreshold;
   await item.save();
@@ -32,17 +33,17 @@ exports.getItemsUnderThreshold = async () => {
 };
 
 exports.addStock = async (stockData) => {
-  const { itemName, quantity, threshold } = stockData;
+  const { itemName, measure, quantity, threshold } = stockData;
   // Validate if the itemName already exists to avoid duplicates (optional)
   const existingStock = await Stock.findOne({ itemName });
   if (existingStock) {
     throw new ApiError(
-      httpStatus.BAD_REQUEST,
+      status.BAD_REQUEST,
       `Item "${itemName}" already exists in stock.`
     );
   }
   // Create and save the new stock item
-  const newStock = new Stock({ itemName, quantity, threshold });
+  const newStock = new Stock({ itemName, measure, quantity, threshold });
   await newStock.save();
   return newStock;
 };

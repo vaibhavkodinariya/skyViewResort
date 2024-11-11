@@ -1,4 +1,4 @@
-const { default: status } = require("http-status");
+const status = require("http-status");
 const {
   createBooking,
   getBookings,

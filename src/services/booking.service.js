@@ -1,7 +1,7 @@
 const Room = require("../models/room.model");
 const Booking = require("../models/bookings.model");
 const ApiError = require("../utils/ApiError");
-const { default: status } = require("http-status");
+const status = require("http-status");
 
 const createBooking = async (
   customerName,

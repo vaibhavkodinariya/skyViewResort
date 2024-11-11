@@ -10,7 +10,9 @@ const envVarsSchema = Joi.object()
       .valid("production", "development", "test")
       .required(),
     PORT: Joi.number().default(3000),
-    MONGODB_URL: Joi.string().required().description("Mongo DB url"),
+    MONGO_URI: Joi.string().required().description("Mongo DB url"),
+    MONGOUSER: Joi.string().required().description("Mongo User"),
+    MONGOPWD: Joi.string().required().description("Mongo Password"),
     JWT_SECRET: Joi.string().required().description("JWT secret key"),
     JWT_ACCESS_EXPIRATION_MINUTES: Joi.number()
       .default(30)
@@ -36,7 +38,9 @@ module.exports = {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
   mongoose: {
-    url: envVars.MONGODB_URL + (envVars.NODE_ENV === "test" ? "-test" : ""),
+    url: envVars.MONGO_URI + (envVars.NODE_ENV === "test" ? "-test" : ""),
+    username: envVars.MONGOUSER,
+    password: envVars.MONGOPWD,
     options: {
       useCreateIndex: true,
       useNewUrlParser: true,

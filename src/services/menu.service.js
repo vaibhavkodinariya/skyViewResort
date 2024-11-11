@@ -2,7 +2,7 @@ const MenuItem = require("../models/menu.model");
 const fs = require("fs").promises;
 const path = require("path");
 const ApiError = require("../utils/ApiError");
-const httpStatus = require("http-status");
+const status = require("http-status");
 
 async function createMenuItem(data) {
   const menuItem = new MenuItem(data);
@@ -21,7 +21,7 @@ async function updateMenuItem(id, data) {
   const existingMenuItem = await MenuItem.findById(id);
 
   if (!existingMenuItem)
-    throw new ApiError(httpStatus.NOT_FOUND, "Menu item not found");
+    throw new ApiError(status.NOT_FOUND, "Menu item not found");
 
   if (
     existingMenuItem.photo &&
@@ -31,7 +31,7 @@ async function updateMenuItem(id, data) {
     const imagePath = path.join(__dirname, "../public", existingMenuItem.photo);
     await fs.unlink(imagePath).catch((err) => {
       throw new ApiError(
-        httpStatus.BAD_REQUEST,
+        status.BAD_REQUEST,
         `Failed to delete old image: ${err.message}`
       );
     });

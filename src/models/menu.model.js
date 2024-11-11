@@ -18,10 +18,6 @@ const menuSchema = new mongoose.Schema(
       type: String,
       enum: ["Indian", "Chinese", "Italian", "Mexican"],
     },
-    calories: {
-      type: Number,
-      min: 0,
-    },
     photo: {
       type: String,
       required: false,

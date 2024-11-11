@@ -4,8 +4,12 @@ const catchAsync = require("../utils/catchAsync");
 const generateResponse = require("../utils/common");
 
 const updateStock = catchAsync(async (req, res) => {
-  const { itemId, newQuantity } = req.body;
-  const updatedStock = await stockService.updateStock(itemId, newQuantity);
+  const { itemId, measure, newQuantity } = req.body;
+  const updatedStock = await stockService.updateStock(
+    itemId,
+    measure,
+    newQuantity
+  );
   res.status(status.OK).send(
     generateResponse(status.OK, {
       updatedStock: updatedStock,
@@ -36,9 +40,10 @@ const getItemsUnderThreshold = catchAsync(async (req, res) => {
 });
 
 const addStock = catchAsync(async (req, res) => {
-  const { itemName, quantity, threshold } = req.body;
+  const { itemName, measure, quantity, threshold } = req.body;
   const newStock = await stockService.addStock({
     itemName,
+    measure,
     quantity,
     threshold,
   });

@@ -4,6 +4,7 @@ const userRoute = require("./user.route");
 const roomRoute = require("./room.route");
 const bookingRoute = require("./booking.route");
 const stockRoute = require("./stock.route");
+const menuRoute = require("./menu.route");
 
 const router = express.Router();
 
@@ -27,6 +28,10 @@ const defaultRoutes = [
   {
     path: "/stocks",
     route: stockRoute,
+  },
+  {
+    path: "/menu",
+    route: menuRoute,
   },
 ];
 

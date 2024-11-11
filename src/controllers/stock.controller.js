@@ -1,4 +1,4 @@
-const httpStatus = require("http-status");
+const status = require("http-status");
 const stockService = require("../services/stock.service");
 const catchAsync = require("../utils/catchAsync");
 const generateResponse = require("../utils/common");
@@ -6,8 +6,8 @@ const generateResponse = require("../utils/common");
 const updateStock = catchAsync(async (req, res) => {
   const { itemId, newQuantity } = req.body;
   const updatedStock = await stockService.updateStock(itemId, newQuantity);
-  res.status(httpStatus.OK).send(
-    generateResponse(httpStatus.OK, {
+  res.status(status.OK).send(
+    generateResponse(status.OK, {
       updatedStock: updatedStock,
       message: "Stock Updated",
     })
@@ -17,8 +17,8 @@ const updateStock = catchAsync(async (req, res) => {
 const setThreshold = catchAsync(async (req, res) => {
   const { itemId, newThreshold } = req.body;
   const stock = await stockService.setThreshold(itemId, newThreshold);
-  res.status(httpStatus.OK).send(
-    generateResponse(httpStatus.OK, {
+  res.status(status.OK).send(
+    generateResponse(status.OK, {
       updatedThreshold: stock,
       message: "Threshold Updated",
     })
@@ -27,8 +27,8 @@ const setThreshold = catchAsync(async (req, res) => {
 
 const getItemsUnderThreshold = catchAsync(async (req, res) => {
   const items = await stockService.getItemsUnderThreshold();
-  res.status(httpStatus.OK).send(
-    generateResponse(httpStatus.OK, {
+  res.status(status.OK).send(
+    generateResponse(status.OK, {
       underThresHold: items,
       message: "Stocks Under Threshold Fetched Successfully",
     })
@@ -42,8 +42,8 @@ const addStock = catchAsync(async (req, res) => {
     quantity,
     threshold,
   });
-  res.status(httpStatus.CREATED).send(
-    generateResponse(httpStatus.CREATED, {
+  res.status(status.CREATED).send(
+    generateResponse(status.CREATED, {
       stock: newStock,
       message: "Item Added",
     })
@@ -55,11 +55,11 @@ const removeStock = catchAsync(async (req, res) => {
   const removedItem = await stockService.removeStock(id);
   if (!removedItem) {
     return res
-      .status(httpStatus.NOT_FOUND)
-      .send(generateResponse(httpStatus.NOT_FOUND, { message: "Not Found" }));
+      .status(status.NOT_FOUND)
+      .send(generateResponse(status.NOT_FOUND, { message: "Not Found" }));
   }
-  res.status(httpStatus.OK).send(
-    generateResponse(httpStatus.OK, {
+  res.status(status.OK).send(
+    generateResponse(status.OK, {
       message: "Item removed successfully",
       item: removedItem,
     })
@@ -68,8 +68,8 @@ const removeStock = catchAsync(async (req, res) => {
 
 const getStocks = catchAsync(async (req, res) => {
   const stocks = await stockService.getAllItems();
-  res.status(httpStatus.OK).send(
-    generateResponse(httpStatus.OK, {
+  res.status(status.OK).send(
+    generateResponse(status.OK, {
       message: "Stocks Fetched Successfully",
       items: stocks,
     })

@@ -19,8 +19,8 @@ router.post(
   auth(roles.bhagwan),
   uploadMiddleware({
     folderName: "rooms",
-    maxFiles: 5,
-    fileSizeLimit: 5 * 1024 * 1024,
+    fileSizeLimit: 10 * 1024 * 1024, // e.g., 2 MB limit
+    singleUpload: false,
   }),
   validate({ body: roomValidator.roomValidationSchema }),
   addRoom
@@ -30,10 +30,10 @@ router.put(
   auth(roles.hotelManager, roles.admin, roles.bhagwan),
   uploadMiddleware({
     folderName: "rooms",
-    maxFiles: 5,
-    fileSizeLimit: 5 * 1024 * 1024,
+    fileSizeLimit: 10 * 1024 * 1024,
+    singleUpload: false,
   }),
-  validate({ body: roomValidator.roomValidationSchema }),
+  validate({ body: roomValidator.roomUpdateValidationSchema }),
   editRoom
 );
 

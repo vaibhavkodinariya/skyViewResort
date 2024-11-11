@@ -28,4 +28,27 @@ const roomValidationSchema = Joi.object({
     }),
 });
 
-module.exports = { roomValidationSchema };
+const roomUpdateValidationSchema = Joi.object({
+  price: Joi.number().positive().messages({
+    "number.base": "Price must be a number.",
+    "number.positive": "Price must be a positive value.",
+    "number.empty": "Price must not be empty.",
+    "any.required": "Price is required.",
+  }),
+  photos: Joi.array()
+    .items(
+      Joi.object({
+        url: Joi.string().uri().messages({
+          "string.uri": "Each photo URL must be a valid URI.",
+          "any.required": "Photo URL is required for each photo.",
+        }),
+      })
+    )
+    .min(1) // Ensures at least one photo is provided
+    .messages({
+      "array.base": "Photos should be an array of objects with URLs.",
+      "array.min": "At least one photo is required.",
+    }),
+});
+
+module.exports = { roomValidationSchema, roomUpdateValidationSchema };

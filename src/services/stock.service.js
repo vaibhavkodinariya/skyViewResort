@@ -1,13 +1,13 @@
-const httpStatus = require("http-status");
+const status = require("http-status");
 const Stock = require("../models/stock.model");
 const ApiError = require("../utils/ApiError");
 
 exports.updateStock = async (itemId, newQuantity) => {
   if (newQuantity < 0)
-    throw new ApiError(httpStatus.BAD_REQUEST, "Quantity cannot be negative.");
+    throw new ApiError(status.BAD_REQUEST, "Quantity cannot be negative.");
 
   const item = await Stock.findById(itemId);
-  if (!item) throw new ApiError(httpStatus.NOT_FOUND, "Item not found.");
+  if (!item) throw new ApiError(status.NOT_FOUND, "Item not found.");
 
   item.quantity = newQuantity;
   await item.save();
@@ -17,7 +17,7 @@ exports.updateStock = async (itemId, newQuantity) => {
 
 exports.setThreshold = async (itemId, newThreshold) => {
   const item = await Stock.findById(itemId);
-  if (!item) throw new ApiError(httpStatus.NOT_FOUND, "Item not found.");
+  if (!item) throw new ApiError(status.NOT_FOUND, "Item not found.");
 
   item.threshold = newThreshold;
   await item.save();
@@ -37,7 +37,7 @@ exports.addStock = async (stockData) => {
   const existingStock = await Stock.findOne({ itemName });
   if (existingStock) {
     throw new ApiError(
-      httpStatus.BAD_REQUEST,
+      status.BAD_REQUEST,
       `Item "${itemName}" already exists in stock.`
     );
   }

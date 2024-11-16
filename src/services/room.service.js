@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 
 const getRoomById = async (id) => {
-  const room = await Room.findById(id).lean();
+  const room = await Room.findOne({ roomNumber: id });
   if (!room) throw new ApiError(status.NOT_FOUND, "Room Not Found");
   return room;
 };

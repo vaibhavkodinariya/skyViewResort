@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
-
+const { toJSON } = require("./plugins");
 const orderSchema = new mongoose.Schema(
   {
     tableNumber: {
-      type: Number,
+      type: String,
       required: true,
-      min: 1,
     },
     waiter: {
       type: mongoose.Schema.Types.ObjectId,
@@ -26,6 +25,14 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
+    gstRate: {
+      type: Number,
+      required: true,
+    },
+    gstAmount: {
+      type: Number,
+      required: true,
+    },
     totalAmount: {
       type: Number,
       required: true,
@@ -33,23 +40,22 @@ const orderSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Pending", "Completed", "Cancelled"],
+      enum: ["Pending", "Completed"],
       default: "Pending",
     },
     customerName: {
       type: String,
-      required: true,
       trim: true,
     },
     customerPhoneNumber: {
       type: String,
-      required: true,
       trim: true,
     },
   },
   { timestamps: true }
 );
 
+orderSchema.plugin(toJSON);
 const Order = mongoose.model("Order", orderSchema);
 
 module.exports = Order;

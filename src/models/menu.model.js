@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const { toJSON } = require("./plugins");
 const menuSchema = new mongoose.Schema(
   {
     name: {
@@ -25,6 +25,8 @@ const menuSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+menuSchema.plugin(toJSON);
 
 const MenuItem = mongoose.model("MenuItem", menuSchema);
 

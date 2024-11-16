@@ -20,7 +20,6 @@ function uploadMiddleware({
       let dir;
       if (singleUpload) {
         dir = path.join(__dirname, "../public/uploads", folderName);
-        console.log("hii", dir);
       } else {
         dir = path.join(__dirname, "../public/uploads", folderName, roomNumber);
       }

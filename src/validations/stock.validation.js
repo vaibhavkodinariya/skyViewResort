@@ -1,15 +1,19 @@
 const Joi = require("joi");
 
 const updateStock = Joi.object({
-  itemId: Joi.string().required().messages({
+  itemId: Joi.string().messages({
     "string.base": "Item ID must be a string.",
     "any.required": "Item ID is required.",
   }),
-  newQuantity: Joi.number().integer().min(0).required().messages({
+  newQuantity: Joi.number().integer().min(0).messages({
     "number.base": "New quantity must be a number.",
     "number.integer": "New quantity must be an integer.",
     "number.min": "New quantity must be at least 0.",
     "any.required": "New quantity is required.",
+  }),
+  measure: Joi.string().valid("grams", "kilograms", "liters").messages({
+    "any.only": 'Measure must be one of ["grams", "kilograms", "liters"].',
+    "any.required": "Measure is required.",
   }),
 });
 
@@ -43,6 +47,13 @@ const addStock = Joi.object({
     "number.min": "Threshold must be at least 0.",
     "any.required": "Threshold is required.",
   }),
+  measure: Joi.string()
+    .valid("grams", "kilograms", "liters")
+    .required()
+    .messages({
+      "any.only": 'Measure must be one of ["grams", "kilograms", "liters"].',
+      "any.required": "Measure is required.",
+    }),
 });
 
 module.exports = { updateStock, updatedThreshold, addStock };

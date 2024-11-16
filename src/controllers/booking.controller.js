@@ -33,7 +33,7 @@ const getAllBookings = catchAsync(async (req, res) => {
   res.status(status.OK).send(
     generateResponse(status.OK, {
       message: "Booking Fetched Successfully",
-      rooms: bookings,
+      bookings: bookings,
       results: bookings.length,
     })
   );

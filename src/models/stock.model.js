@@ -15,7 +15,7 @@ const stockSchema = new mongoose.Schema(
     measure: {
       type: Number,
       required: true,
-      min: 0,
+      enum: ["grams", "kilograms", "liters"],
     },
     threshold: {
       type: Number,

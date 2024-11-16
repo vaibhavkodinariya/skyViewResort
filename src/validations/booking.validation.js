@@ -24,10 +24,9 @@ const bookingSchema = Joi.object({
     "any.required": "Room is required",
   }),
 
-  checkInDate: Joi.date().iso().min("now").required().messages({
+  checkInDate: Joi.date().iso().required().messages({
     "date.base": "Check-in date must be a valid date",
     "date.iso": "Check-in date must be in ISO format (YYYY-MM-DD)",
-    "date.min": "Check-in date cannot be in the past",
     "any.required": "Check-in date is required",
   }),
 
@@ -58,10 +57,9 @@ const updateBookingSchema = Joi.object({
       "string.empty": "Customer phone cannot be empty",
     }),
 
-  checkInDate: Joi.date().iso().min("now").messages({
+  checkInDate: Joi.date().iso().messages({
     "date.base": "Check-in date must be a valid date",
     "date.iso": "Check-in date must be in ISO format (YYYY-MM-DD)",
-    "date.min": "Check-in date cannot be in the past",
   }),
 
   checkOutDate: Joi.date().iso().min(Joi.ref("checkInDate")).messages({

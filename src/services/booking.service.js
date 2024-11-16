@@ -2,6 +2,7 @@ const Room = require("../models/room.model");
 const Booking = require("../models/bookings.model");
 const ApiError = require("../utils/ApiError");
 const status = require("http-status");
+const config = require("../config/config");
 
 const createBooking = async (
   customerName,
@@ -44,8 +45,8 @@ const createBooking = async (
   const totalPrice = roomPrice * duration;
 
   // Add GST (e.g., 12%)
-  const GST = 12;
-  const totalPriceWithGST = totalPrice * (1 + GST / 100);
+  const gstAmount = totalPrice * config.gst.hotelGst;
+  const totalPriceWithGST = totalPrice + gstAmount;
 
   // Create new booking
   const newBooking = new Booking({
@@ -54,14 +55,16 @@ const createBooking = async (
     room,
     checkInDate,
     checkOutDate,
+    gstRate: config.gst.hotelGst,
+    gstAmount,
     totalPrice: Math.round(totalPriceWithGST),
   });
 
-  await newBooking.save();
-
   // Update room availability to false
   roomDetails.availability = false;
-  return await roomDetails.save();
+  await roomDetails.save();
+
+  return await newBooking.save();
 };
 
 const getBookings = async () => {
@@ -149,10 +152,11 @@ const updateBookings = async (
     const checkOut = new Date(booking.checkOutDate);
     const duration = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24)); // Calculate days
 
-    const GST = 12; // Example GST percentage
     const totalPrice = roomPrice * duration;
-    const totalPriceWithGST = totalPrice * (1 + GST / 100);
+    const gstAmount = totalPrice * config.gst.hotelGst;
+    const totalPriceWithGST = totalPrice + gstAmount;
 
+    booking.gstAmount = gstAmount;
     booking.totalPrice = Math.round(totalPriceWithGST);
   }
   return await booking.save();

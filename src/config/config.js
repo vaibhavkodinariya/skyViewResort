@@ -10,6 +10,10 @@ const envVarsSchema = Joi.object()
       .valid("production", "development", "test")
       .required(),
     PORT: Joi.number().default(3000),
+    HOTELGST: Joi.string().required().description("Hotel GST Value Required"),
+    FOODGST: Joi.string()
+      .required()
+      .description("Restaurent GST Value Required"),
     MONGO_URI: Joi.string().required().description("Mongo DB url"),
     MONGOUSER: Joi.string().required().description("Mongo User"),
     MONGOPWD: Joi.string().required().description("Mongo Password"),
@@ -37,6 +41,10 @@ if (error) {
 module.exports = {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
+  gst: {
+    foodGst: envVars.FOODGST,
+    hotelGst: envVars.HOTELGST,
+  },
   mongoose: {
     url: envVars.MONGO_URI + (envVars.NODE_ENV === "test" ? "-test" : ""),
     username: envVars.MONGOUSER,

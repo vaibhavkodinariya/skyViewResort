@@ -16,6 +16,11 @@ const bookingSchema = new mongoose.Schema(
       ref: "Room",
       required: true,
     },
+    platform: {
+      type: String,
+      enum: ["skyviewresort"],
+      default: "skyviewresort",
+    },
     checkInDate: {
       type: Date,
       required: true,
@@ -29,11 +34,20 @@ const bookingSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    gstRate: {
+      type: Number,
+      required: true,
+    },
+    gstAmount: {
+      type: Number,
+      required: true,
+    },
   },
   {
     timestamps: true,
   }
 );
 
+bookingSchema.plugin(toJSON);
 const Booking = mongoose.model("Booking", bookingSchema);
 module.exports = Booking;

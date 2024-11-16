@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt"); // For password hashing
-const { paginate } = require("./plugins");
+const { paginate, toJSON } = require("./plugins");
 
 const userSchema = new mongoose.Schema(
   {
@@ -78,7 +78,7 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.comparePassword = function (password) {
   return bcrypt.compare(password, this.password);
 };
-
+userSchema.plugin(toJSON);
 userSchema.plugin(paginate);
 const User = mongoose.model("User", userSchema);
 

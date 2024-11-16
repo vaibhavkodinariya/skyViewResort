@@ -9,8 +9,8 @@ exports.updateStock = async (itemId, measure, newQuantity) => {
   const item = await Stock.findById(itemId);
   if (!item) throw new ApiError(status.NOT_FOUND, "Item not found.");
 
-  item.quantity = newQuantity;
-  item.measure = measure;
+  item.quantity = newQuantity && newQuantity;
+  item.measure = measure && measure;
   await item.save();
 
   return item;

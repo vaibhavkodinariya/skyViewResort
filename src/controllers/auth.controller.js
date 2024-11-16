@@ -9,7 +9,7 @@ const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const user = await loginUserWithEmailAndPassword(email, password);
   const token = jwt.sign({ pid: user.id, role: user.role }, config.jwt.secret, {
-    expiresIn: "1h",
+    expiresIn: "1d",
   });
   res.send(generateResponse(status.OK, { user: user, token: token }));
 });

@@ -5,6 +5,7 @@ const roomRoute = require("./room.route");
 const bookingRoute = require("./booking.route");
 const stockRoute = require("./stock.route");
 const menuRoute = require("./menu.route");
+const orderRoute = require("./order.route");
 
 const router = express.Router();
 
@@ -32,6 +33,10 @@ const defaultRoutes = [
   {
     path: "/menu",
     route: menuRoute,
+  },
+  {
+    path: "/orders",
+    route: orderRoute,
   },
 ];
 

@@ -11,6 +11,7 @@ services:
     volumes:
       - ./src/public:/backend/src/public
       - ./logs:/backend/logs
+      - ./certs:/backend/certs
     restart: always
 
   mongo:

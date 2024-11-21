@@ -175,5 +175,8 @@ exports.updateOrder = async (orderId, updateData) => {
   // Set the new total amount if recalculated
   order.gstAmount = gstAmount;
   order.totalAmount = totalAmount;
+  if (updateData.discount) {
+    order.totalAmount = order.totalAmount - updateData.discount;
+  }
   return await order.save();
 };

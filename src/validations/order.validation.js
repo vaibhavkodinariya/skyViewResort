@@ -33,6 +33,9 @@ const createOrder = Joi.object({
 
 const updateOrder = Joi.object({
   tableNumber: Joi.string(),
+  discount: Joi.number().min(0).messages({
+    "number.min": "Discount amount must be positive",
+  }),
   items: Joi.array()
     .items(
       Joi.object({

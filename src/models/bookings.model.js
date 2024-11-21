@@ -34,6 +34,14 @@ const bookingSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    adhaarCard: {
+      type: Number,
+      required: true,
+    },
+    discount: {
+      type: Number,
+      min: 0,
+    },
     gstRate: {
       type: Number,
       required: true,

@@ -8,6 +8,8 @@ const createBooking = async (
   customerName,
   customerPhone,
   room,
+  adhaarCard,
+  discount,
   checkInDate,
   checkOutDate
 ) => {
@@ -46,13 +48,17 @@ const createBooking = async (
 
   // Add GST (e.g., 12%)
   const gstAmount = totalPrice * config.gst.hotelGst;
-  const totalPriceWithGST = totalPrice + gstAmount;
-
+  let totalPriceWithGST = totalPrice + gstAmount;
+  if (discount) {
+    totalPriceWithGST -= discount;
+  }
   // Create new booking
   const newBooking = new Booking({
     customerName,
     customerPhone,
     room,
+    adhaarCard,
+    discount,
     checkInDate,
     checkOutDate,
     gstRate: config.gst.hotelGst,
@@ -97,7 +103,9 @@ const updateBookings = async (
   customerPhone,
   checkInDate,
   checkOutDate,
-  bookingId
+  bookingId,
+  discount,
+  adhaarCard
 ) => {
   // Find the booking by ID
   const booking = await Booking.findById(bookingId);
@@ -139,6 +147,9 @@ const updateBookings = async (
   if (checkOutDate) {
     booking.checkOutDate = checkOutDate;
   }
+  if (adhaarCard) {
+    booking.adhaarCard = adhaarCard;
+  }
 
   // Recalculate total price if dates are updated
   if (checkInDate || checkOutDate) {
@@ -150,14 +161,17 @@ const updateBookings = async (
     const roomPrice = roomDetails.price;
     const checkIn = new Date(booking.checkInDate);
     const checkOut = new Date(booking.checkOutDate);
-    const duration = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24)); // Calculate days
+    const duration = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
 
     const totalPrice = roomPrice * duration;
     const gstAmount = totalPrice * config.gst.hotelGst;
     const totalPriceWithGST = totalPrice + gstAmount;
-
     booking.gstAmount = gstAmount;
     booking.totalPrice = Math.round(totalPriceWithGST);
+  }
+  if (discount) {
+    booking.discount = discount;
+    booking.totalPrice = booking.totalPrice - discount;
   }
   return await booking.save();
 };

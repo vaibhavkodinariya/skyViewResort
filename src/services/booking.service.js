@@ -7,70 +7,79 @@ const config = require("../config/config");
 const createBooking = async (
   customerName,
   customerPhone,
-  room,
+  roomNumbers,
   adhaarCard,
   discount,
   checkInDate,
-  checkOutDate
+  checkOutDate,
+  paymentMethod
 ) => {
-  // Check if the room exists
-  const roomDetails = await Room.findOne({ roomNumber: room });
-  if (!roomDetails) {
-    throw new ApiError(status.NOT_FOUND, "Room not found");
+  // Fetch details of all rooms in the booking
+  const rooms = await Room.find({ roomNumber: { $in: roomNumbers } });
+
+  if (rooms.length !== roomNumbers.length) {
+    throw new ApiError(status.OK, "One or more rooms not found");
   }
 
-  room = roomDetails._id;
+  // Check for conflicting bookings for each room
+  for (const room of rooms) {
+    const conflictingBooking = await Booking.findOne({
+      rooms: { $in: room._id },
+      $or: [
+        {
+          checkInDate: { $lte: checkOutDate },
+          checkOutDate: { $gte: checkInDate },
+        },
+      ],
+    });
 
-  // Check if booking dates are available
-  const conflictingBooking = await Booking.findOne({
-    room,
-    $or: [
-      {
-        checkInDate: { $lt: checkOutDate },
-        checkOutDate: { $gt: checkInDate },
-      },
-    ],
-  });
-
-  if (conflictingBooking && !roomDetails.availability) {
-    throw new ApiError(
-      status.BAD_REQUEST,
-      "Room is already booked for the selected dates"
-    );
+    if (conflictingBooking && !room.availability) {
+      throw new ApiError(
+        status.BAD_REQUEST,
+        `Room ${room.roomNumber} is already booked for the selected dates`
+      );
+    }
   }
 
-  // Calculate total price based on duration
-  const roomPrice = roomDetails.price; // Assume `price` is the daily rate
-  const checkIn = new Date(checkInDate);
-  const checkOut = new Date(checkOutDate);
-  const duration = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24)); // Calculate days
-  const totalPrice = roomPrice * duration;
+  // Calculate total price and GST
+  const duration = Math.ceil(
+    (new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24)
+  );
 
-  // Add GST (e.g., 12%)
-  const gstAmount = totalPrice * config.gst.hotelGst;
-  let totalPriceWithGST = totalPrice + gstAmount;
-  if (discount) {
-    totalPriceWithGST -= discount;
+  let totalRoomPrice = 0;
+  const roomDetails = [];
+
+  for (const room of rooms) {
+    const roomPrice = room.price * duration; // Daily rate * duration
+    totalRoomPrice += roomPrice;
+    roomDetails.push(room._id);
   }
+
+  const gstRate = config.gst.hotelGst;
+  const gstAmount = totalRoomPrice * gstRate;
+  let totalPriceWithGST = totalRoomPrice + gstAmount - discount;
+
   // Create new booking
-  const newBooking = new Booking({
+  await Booking.create({
     customerName,
     customerPhone,
-    room,
+    rooms: roomDetails,
     adhaarCard,
     discount,
     checkInDate,
     checkOutDate,
-    gstRate: config.gst.hotelGst,
+    gstRate,
     gstAmount,
+    paymentMethod,
     totalPrice: Math.round(totalPriceWithGST),
   });
 
-  // Update room availability to false
-  roomDetails.availability = false;
-  await roomDetails.save();
-
-  return await newBooking.save();
+  // Update availability for all rooms
+  for (const room of rooms) {
+    room.availability = false;
+    await room.save();
+  }
+  return;
 };
 
 const getBookings = async () => {
@@ -105,18 +114,30 @@ const updateBookings = async (
   checkOutDate,
   bookingId,
   discount,
-  adhaarCard
+  adhaarCard,
+  roomNumbers,
+  paymentMethod
 ) => {
-  // Find the booking by ID
-  const booking = await Booking.findById(bookingId);
+  // Find the booking by ID and populate room details
+  const booking = await Booking.findById(bookingId).populate("rooms.room");
   if (!booking) {
-    throw new ApiError(status.NOT_FOUND, "Booking not found");
+    throw new ApiError(status.OK, "Booking not found");
   }
 
-  // Check for conflicting bookings if check-in or check-out dates are updated
-  if (checkInDate || checkOutDate) {
-    const conflictingBooking = await Booking.findOne({
-      room: booking.room,
+  const currentRoomIds = booking.rooms.map((r) => r);
+
+  // Check for room updates
+  let updatedRoomIds = currentRoomIds;
+  if (roomNumbers && roomNumbers.length > 0) {
+    const rooms = await Room.find({ roomNumber: { $in: roomNumbers } });
+
+    if (rooms.length !== roomNumbers.length) {
+      throw new ApiError(status.OK, "One or more rooms not found");
+    }
+
+    // Check for conflicts in all new rooms in one query
+    const conflictingBookings = await Booking.findOne({
+      "rooms.room": { $in: rooms.map((r) => r._id) },
       _id: { $ne: bookingId },
       $or: [
         {
@@ -126,53 +147,64 @@ const updateBookings = async (
       ],
     });
 
-    if (conflictingBooking) {
+    if (conflictingBookings) {
       throw new ApiError(
         status.BAD_REQUEST,
-        "Room is already booked for the updated dates"
+        `One or more selected rooms are already booked for the updated dates`
       );
     }
+
+    updatedRoomIds = rooms.map((room) => room._id);
   }
 
-  // Update booking details if provided
-  if (customerName) {
-    booking.customerName = customerName;
-  }
-  if (customerPhone) {
-    booking.customerPhone = customerPhone;
-  }
-  if (checkInDate) {
-    booking.checkInDate = checkInDate;
-  }
-  if (checkOutDate) {
-    booking.checkOutDate = checkOutDate;
-  }
-  if (adhaarCard) {
-    booking.adhaarCard = adhaarCard;
+  // Update fields dynamically
+  if (customerName) booking.customerName = customerName;
+  if (customerPhone) booking.customerPhone = customerPhone;
+  if (adhaarCard) booking.adhaarCard = adhaarCard;
+  if (paymentMethod) booking.paymentMethod = paymentMethod;
+  if (checkInDate) booking.checkInDate = checkInDate;
+  if (checkOutDate) booking.checkOutDate = checkOutDate;
+  if (discount !== undefined) booking.discount = discount;
+
+  // Recalculate total price and GST if dates or rooms are updated
+  const duration = Math.ceil(
+    (new Date(booking.checkOutDate) - new Date(booking.checkInDate)) /
+      (1000 * 60 * 60 * 24)
+  ); // Calculate days
+
+  if (duration < 0) {
+    throw new ApiError(
+      status.BAD_REQUEST,
+      "Check-out date must be after the check-in date"
+    );
   }
 
-  // Recalculate total price if dates are updated
-  if (checkInDate || checkOutDate) {
-    const roomDetails = await Room.findById(booking.room);
-    if (!roomDetails) {
-      throw new ApiError(status.NOT_FOUND, "Room not found");
-    }
+  const rooms = await Room.find({ _id: { $in: updatedRoomIds } });
+  const totalRoomPrice = rooms.reduce(
+    (sum, room) => sum + room.price * duration,
+    0
+  );
 
-    const roomPrice = roomDetails.price;
-    const checkIn = new Date(booking.checkInDate);
-    const checkOut = new Date(booking.checkOutDate);
-    const duration = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+  const gstRate = config.gst.hotelGst;
+  const gstAmount = totalRoomPrice * gstRate;
+  let totalPriceWithGST = totalRoomPrice + gstAmount - (discount || 0);
 
-    const totalPrice = roomPrice * duration;
-    const gstAmount = totalPrice * config.gst.hotelGst;
-    const totalPriceWithGST = totalPrice + gstAmount;
-    booking.gstAmount = gstAmount;
-    booking.totalPrice = Math.round(totalPriceWithGST);
+  booking.rooms = updatedRoomIds.map((id) => id);
+  booking.gstAmount = gstAmount;
+  booking.totalPrice = Math.round(totalPriceWithGST);
+
+  // Update room availability efficiently
+  if (roomNumbers) {
+    await Room.updateMany(
+      { _id: { $in: currentRoomIds } },
+      { availability: true }
+    );
+    await Room.updateMany(
+      { _id: { $in: updatedRoomIds } },
+      { availability: false }
+    );
   }
-  if (discount) {
-    booking.discount = discount;
-    booking.totalPrice = booking.totalPrice - discount;
-  }
+
   return await booking.save();
 };
 

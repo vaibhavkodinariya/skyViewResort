@@ -11,11 +11,13 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    room: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Room",
-      required: true,
-    },
+    rooms: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Room",
+        required: true,
+      },
+    ],
     platform: {
       type: String,
       enum: ["skyviewresort"],
@@ -50,6 +52,15 @@ const bookingSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    invoiceNumber: {
+      type: Number,
+      unique: true,
+    },
+    paymentMethod: {
+      type: String,
+      enum: ["cash", "upi", "account"],
+      default: "cash",
+    },
   },
   {
     timestamps: true,
@@ -57,5 +68,22 @@ const bookingSchema = new mongoose.Schema(
 );
 
 bookingSchema.plugin(toJSON);
+bookingSchema.statics.generateInvoiceNumber = async function () {
+  const lastBooking = await this.findOne().sort({ invoiceNumber: -1 });
+  return lastBooking ? lastBooking.invoiceNumber + 1 : 1;
+};
+
+// Pre-save hook to assign the invoice number
+bookingSchema.pre("save", async function (next) {
+  if (!this.invoiceNumber) {
+    try {
+      this.invoiceNumber = await this.constructor.generateInvoiceNumber();
+    } catch (error) {
+      return next(error);
+    }
+  }
+  next();
+});
+
 const Booking = mongoose.model("Booking", bookingSchema);
 module.exports = Booking;

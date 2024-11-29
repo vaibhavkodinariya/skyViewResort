@@ -30,4 +30,11 @@ router.put(
   bookingController.editBooking
 );
 
+router.get(
+  "/generateBill/:bookingId",
+  auth(roles.bhagwan, roles.hotelManager, roles.admin),
+  validate({ params: bookingValidations.validateBookingId }),
+  bookingController.downloadBill
+);
+
 module.exports = router;

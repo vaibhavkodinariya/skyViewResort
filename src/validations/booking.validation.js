@@ -17,7 +17,13 @@ const bookingSchema = Joi.object({
       "string.length": "Aadhaar card number must be exactly 12 digits.",
       "string.pattern.base": "Aadhaar card number must contain only digits.",
     }),
-
+  paymentMethod: Joi.string()
+    .valid("cash", "upi", "account")
+    .messages({
+      "string.base": "Payment method must be a string.",
+      "any.only": "Payment method must be one of ['cash', 'upi', 'account'].",
+    })
+    .optional(),
   discount: Joi.number().min(0).optional().messages({
     "number.min": "Discount amount must be positive",
   }),
@@ -30,10 +36,8 @@ const bookingSchema = Joi.object({
       "any.required": "Customer phone is required",
     }),
 
-  room: Joi.number().required().messages({
-    "number.base": "Room must be a number (Room Number)",
-    "number.empty": "Room cannot be empty",
-    "any.required": "Room is required",
+  room: Joi.array().items(Joi.number()).min(1).messages({
+    "any.min": "Must Contain One Room",
   }),
 
   checkInDate: Joi.date().iso().required().messages({
@@ -68,17 +72,24 @@ const updateBookingSchema = Joi.object({
       "string.length": "Aadhaar card number must be exactly 12 digits.",
       "string.pattern.base": "Aadhaar card number must contain only digits.",
     }),
+
   discount: Joi.number().min(0).messages({
     "number.min": "Discount amount must be positive",
   }),
-
+  paymentMethod: Joi.string()
+    .valid("cash", "upi", "account")
+    .messages({
+      "string.base": "Payment method must be a string.",
+      "any.only": "Payment method must be one of ['cash', 'upi', 'account'].",
+    })
+    .optional(),
   customerPhone: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .messages({
       "string.pattern.base": "Customer phone must be a 10-digit number",
       "string.empty": "Customer phone cannot be empty",
     }),
-
+  roomNumbers: Joi.array().items(Joi.number()).optional(),
   checkInDate: Joi.date().iso().messages({
     "date.base": "Check-in date must be a valid date",
     "date.iso": "Check-in date must be in ISO format (YYYY-MM-DD)",
@@ -90,13 +101,31 @@ const updateBookingSchema = Joi.object({
     "date.min": "Check-out date must be after the check-in date",
   }),
 })
-  .or("customerName", "customerPhone", "checkInDate", "checkOutDate")
+  .or(
+    "customerName",
+    "customerPhone",
+    "checkInDate",
+    "checkOutDate",
+    "discount"
+  )
   .messages({
     "object.missing":
       "At least one of customerName, customerPhone, checkInDate, or checkOutDate is required",
   });
 
+const validateBookingId = Joi.object({
+  bookingId: Joi.string()
+    .pattern(/^[0-9a-fA-F]{24}$/, "ObjectId")
+    .required()
+    .messages({
+      "string.base": "Booking ID must be a string.",
+      "string.pattern.name": "Booking ID must be a valid ObjectId.",
+      "any.required": "Booking ID is required.",
+    }),
+});
+
 module.exports = {
   bookingSchema,
   updateBookingSchema,
+  validateBookingId,
 };

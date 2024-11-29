@@ -6,6 +6,7 @@ dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const envVarsSchema = Joi.object()
   .keys({
+    BASEURL: Joi.string().required().description("Base url required"),
     NODE_ENV: Joi.string()
       .valid("production", "development", "test")
       .required(),
@@ -41,6 +42,7 @@ if (error) {
 module.exports = {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
+  baseUrl: envVars.BASEURL,
   gst: {
     foodGst: envVars.FOODGST,
     hotelGst: envVars.HOTELGST,

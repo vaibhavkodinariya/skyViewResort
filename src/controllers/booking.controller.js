@@ -7,6 +7,18 @@ const {
 } = require("../services/booking.service");
 const catchAsync = require("../utils/catchAsync");
 const generateResponse = require("../utils/common");
+const fs = require("fs");
+const Booking = require("../models/bookings.model");
+const path = require("path");
+const puppeteer = require("puppeteer");
+const config = require("../config/config");
+const hbs = require("hbs");
+
+const compileTemplate = (filePath, data) => {
+  const templateContent = fs.readFileSync(filePath, "utf-8");
+  const compiledTemplate = hbs.compile(templateContent);
+  return compiledTemplate(data);
+};
 
 const addBooking = catchAsync(async (req, res) => {
   const {
@@ -17,22 +29,23 @@ const addBooking = catchAsync(async (req, res) => {
     discount,
     checkInDate,
     checkOutDate,
+    paymentMethod,
   } = req.body;
 
-  const newBooking = await createBooking(
+  await createBooking(
     customerName,
     customerPhone,
     room,
     adhaarCard,
     discount,
     checkInDate,
-    checkOutDate
+    checkOutDate,
+    paymentMethod
   );
 
   res.status(status.CREATED).send(
     generateResponse(status.CREATED, {
       message: "Booking created successfully",
-      room: newBooking,
     })
   );
 });
@@ -65,23 +78,18 @@ const getRoomWiseBooking = catchAsync(async (req, res) => {
 const editBooking = catchAsync(async (req, res) => {
   const { bookingId } = req.params;
 
-  const {
-    customerName,
-    customerPhone,
-    checkInDate,
-    checkOutDate,
-    discount,
-    adhaarCard,
-  } = req.body;
   const booking = await updateBookings(
-    customerName,
-    customerPhone,
-    checkInDate,
-    checkOutDate,
+    req.body?.customerName,
+    req.body?.customerPhone,
+    req.body?.checkInDate,
+    req.body?.checkOutDate,
     bookingId,
-    discount,
-    adhaarCard
+    req.body?.discount,
+    req.body?.adhaarCard,
+    req.body?.roomNumbers,
+    req.body?.paymentMethod
   );
+
   res.status(status.OK).send(
     generateResponse(status.OK, {
       message: "Booking updated successfully",
@@ -90,9 +98,70 @@ const editBooking = catchAsync(async (req, res) => {
   );
 });
 
+const downloadBill = catchAsync(async (req, res) => {
+  const { bookingId } = req.params;
+
+  const booking = await Booking.findById(bookingId).populate("rooms");
+  if (!booking) {
+    throw new ApiError(404, "Booking not found");
+  }
+  const duration = Math.ceil(
+    (new Date(booking.checkOutDate) - new Date(booking.checkInDate)) /
+      (1000 * 60 * 60 * 24)
+  );
+  // Data to pass into the template
+  const data = {
+    hotelName: "Sky View Resort",
+    hotelAddress: "XYZ Colony, Bhuj",
+    hotelPhone: "3848384438",
+    customerName: booking.customerName,
+    roomNumber: booking.rooms.map((room) => room.roomNumber).join(", "),
+    checkIn: booking.checkInDate.toDateString(),
+    checkOut: booking.checkOutDate.toDateString(),
+    invoiceNumber: `#${booking.invoiceNumber}`,
+    invoiceDate: new Date().toLocaleDateString(),
+    paymentMethod: "Cash",
+    items: booking.rooms.map((room) => ({
+      description: `Room: ${room.roomNumber}`,
+      unitPrice: `${room.price} * ${duration}`,
+      total: room.price * duration,
+    })),
+    discount: booking.discount,
+    subtotal: booking.totalPrice - booking.gstAmount,
+    gst: booking.gstAmount,
+    grandTotal: booking.totalPrice,
+    partnerLogo: `${config.baseUrl}/images/CM-Logo.png`,
+    hotelLogo: `${config.baseUrl}/images/skyView.svg`,
+  };
+
+  const html = compileTemplate(
+    path.resolve(__dirname, "../views/hotelBilling.hbs"),
+    data
+  );
+
+  const browser = await puppeteer.launch({
+    headless: "new",
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
+  const page = await browser.newPage();
+  await page.setContent(html, { waitUntil: "networkidle0" });
+  // Generate PDF
+  const pdfBuffer = await page.pdf({ format: "A4", landscape: true });
+  await browser.close();
+
+  // Send PDF as a response
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename=invoice_${booking._id}.pdf`
+  );
+  res.end(pdfBuffer); // Use `res.end` for binary data
+});
+
 module.exports = {
   addBooking,
   getAllBookings,
   getRoomWiseBooking,
   editBooking,
+  downloadBill,
 };

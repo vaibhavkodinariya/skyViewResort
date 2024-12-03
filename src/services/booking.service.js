@@ -83,7 +83,7 @@ const createBooking = async (
 };
 
 const getBookings = async () => {
-  const bookings = await Booking.find().populate("room", "roomNumber price");
+  const bookings = await Booking.find().populate("rooms", "roomNumber price");
   if (!bookings.length) {
     throw new ApiError(status.NOT_FOUND, "No bookings found");
   }
@@ -96,8 +96,8 @@ const roomWiseBooking = async (roomNumber) => {
     throw new ApiError(status.NOT_FOUND, "Room not found");
   }
 
-  const bookings = await Booking.find({ room: room._id }).populate(
-    "room",
+  const bookings = await Booking.find({ rooms: { $in: [room._id] } }).populate(
+    "rooms",
     "roomNumber price"
   );
 

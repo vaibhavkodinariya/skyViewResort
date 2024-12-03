@@ -35,4 +35,6 @@ router.put(
   orderController.updateOrder
 );
 
+router.post("/billGenerate", orderController.billGeneration);
+
 module.exports = router;

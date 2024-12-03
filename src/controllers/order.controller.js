@@ -3,6 +3,7 @@ const catchAsync = require("../utils/catchAsync");
 const status = require("http-status");
 const generateResponse = require("../utils/common");
 const ApiError = require("../utils/ApiError");
+const Order = require("../models/order.model");
 
 const createOrder = catchAsync(async (req, res, next) => {
   const orderData = req.body;
@@ -70,10 +71,17 @@ const updateOrder = catchAsync(async (req, res, next) => {
   );
 });
 
+const billGeneration = catchAsync(async (req, res) => {
+  const { orderNumber } = req.body;
+  const items = await Order.find({ orderNumber: { $in: orderNumber } });
+  res.send(items);
+});
+
 module.exports = {
   createOrder,
   updateOrderStatus,
   getOrderById,
   getAllOrders,
   updateOrder,
+  billGeneration,
 };

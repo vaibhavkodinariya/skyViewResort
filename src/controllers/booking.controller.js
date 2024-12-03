@@ -10,7 +10,6 @@ const generateResponse = require("../utils/common");
 const fs = require("fs");
 const Booking = require("../models/bookings.model");
 const path = require("path");
-const puppeteer = require("puppeteer");
 const config = require("../config/config");
 const hbs = require("hbs");
 
@@ -139,23 +138,7 @@ const downloadBill = catchAsync(async (req, res) => {
     data
   );
 
-  const browser = await puppeteer.launch({
-    headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
-  const page = await browser.newPage();
-  await page.setContent(html, { waitUntil: "networkidle0" });
-  // Generate PDF
-  const pdfBuffer = await page.pdf({ format: "A4", landscape: true });
-  await browser.close();
-
-  // Send PDF as a response
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader(
-    "Content-Disposition",
-    `attachment; filename=invoice_${booking._id}.pdf`
-  );
-  res.end(pdfBuffer); // Use `res.end` for binary data
+  res.status(200).send(generateResponse(status.OK, { html: html }));
 });
 
 module.exports = {

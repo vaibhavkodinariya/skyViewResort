@@ -51,9 +51,9 @@ if (config.env === "production") {
   app.use("/v1/auth", authLimiter);
 }
 
+app.get("/favicon.ico", (req, res) => res.status(204).send());
 // v1 api routes
 app.use("/v1", routes);
-
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
   next(new ApiError(status.NOT_FOUND, "Not found"));

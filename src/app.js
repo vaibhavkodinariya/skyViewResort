@@ -46,10 +46,7 @@ passport.use("jwt", jwtStrategy);
 
 app.use(express.static(path.join(__dirname, "public")));
 
-// limit repeated failed requests to auth endpoints
-if (config.env === "production") {
-  app.use("/v1/auth", authLimiter);
-}
+app.use(authLimiter);
 
 app.get("/favicon.ico", (req, res) => res.status(204).send());
 // v1 api routes

@@ -31,11 +31,7 @@ const updateOrderStatus = catchAsync(async (req, res, next) => {
   const orderId = req.params.id;
   const orderStatus = req.body.status;
   const waiter = req.user._id;
-  const updatedOrder = await OrderService.updateOrderStatus(
-    orderId,
-    orderStatus,
-    waiter
-  );
+  await OrderService.updateOrderStatus(res, orderId, orderStatus, waiter);
   res.status(status.OK).send(
     generateResponse(status.OK, {
       message: "Order Status Updated Successfully",
@@ -57,18 +53,15 @@ const updateOrder = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const updateData = req.body;
   updateData.waiter = req.user._id;
-  const updatedOrder = await OrderService.updateOrder(id, updateData);
-
-  if (!updatedOrder) {
-    throw new ApiError(status.NOT_FOUND, "Order not found");
+  const updatedOrder = await OrderService.updateOrder(res, id, updateData);
+  if (updatedOrder) {
+    res.status(status.OK).send(
+      generateResponse(status.OK, {
+        updatedOrder: updatedOrder,
+        message: "Order Updated Successfully",
+      })
+    );
   }
-
-  res.status(status.OK).send(
-    generateResponse(status.OK, {
-      updatedOrder: updatedOrder,
-      message: "Order Updated Successfully",
-    })
-  );
 });
 
 const billGeneration = catchAsync(async (req, res) => {

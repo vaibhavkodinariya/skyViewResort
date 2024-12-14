@@ -23,7 +23,7 @@ const addBooking = catchAsync(async (req, res) => {
   const {
     customerName,
     customerPhone,
-    room,
+    rooms,
     adhaarCard,
     discount,
     checkInDate,
@@ -34,7 +34,7 @@ const addBooking = catchAsync(async (req, res) => {
   await createBooking(
     customerName,
     customerPhone,
-    room,
+    rooms,
     adhaarCard,
     discount,
     checkInDate,
@@ -50,28 +50,31 @@ const addBooking = catchAsync(async (req, res) => {
 });
 
 const getAllBookings = catchAsync(async (req, res) => {
-  const bookings = await getBookings();
-  res.status(status.OK).send(
-    generateResponse(status.OK, {
-      message: "Booking Fetched Successfully",
-      bookings: bookings,
-      results: bookings.length,
-    })
-  );
+  const bookings = await getBookings(res);
+  if (bookings) {
+    res.status(status.OK).send(
+      generateResponse(status.OK, {
+        message: "Booking Fetched Successfully",
+        bookings: bookings,
+        results: bookings.length,
+      })
+    );
+  }
 });
 
 const getRoomWiseBooking = catchAsync(async (req, res) => {
   const { roomNumber } = req.params;
 
-  const bookings = await roomWiseBooking(roomNumber);
-
-  res.status(status.OK).send(
-    generateResponse(status.OK, {
-      message: "Booking Fetched Successfully",
-      results: bookings.length,
-      booking: bookings,
-    })
-  );
+  const bookings = await roomWiseBooking(res, roomNumber);
+  if (bookings) {
+    res.status(status.OK).send(
+      generateResponse(status.OK, {
+        message: "Booking Fetched Successfully",
+        results: bookings.length,
+        booking: bookings,
+      })
+    );
+  }
 });
 
 const editBooking = catchAsync(async (req, res) => {
@@ -85,7 +88,7 @@ const editBooking = catchAsync(async (req, res) => {
     bookingId,
     req.body?.discount,
     req.body?.adhaarCard,
-    req.body?.roomNumbers,
+    req.body?.rooms,
     req.body?.paymentMethod
   );
 
@@ -102,7 +105,11 @@ const downloadBill = catchAsync(async (req, res) => {
 
   const booking = await Booking.findById(bookingId).populate("rooms");
   if (!booking) {
-    throw new ApiError(404, "Booking not found");
+    return res
+      .status(200)
+      .send(
+        generateResponse(status.NOT_FOUND, { message: "Booking not found" })
+      );
   }
   const duration = Math.ceil(
     (new Date(booking.checkOutDate) - new Date(booking.checkInDate)) /

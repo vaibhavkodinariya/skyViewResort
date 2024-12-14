@@ -8,6 +8,7 @@ const {
   getRoomDetails,
   getAllRooms,
   editRoom,
+  upateRoomAvailability,
 } = require("../../controllers/room.controller");
 const roomValidator = require("../../validations/room.validation");
 const uploadMiddleware = require("../../middlewares/multer");
@@ -19,7 +20,7 @@ router.post(
   auth(roles.bhagwan),
   uploadMiddleware({
     folderName: "rooms",
-    fileSizeLimit: 10 * 1024 * 1024, // e.g., 2 MB limit
+    fileSizeLimit: 10 * 1024 * 1024,
     singleUpload: false,
   }),
   validate({ body: roomValidator.roomValidationSchema }),
@@ -46,6 +47,12 @@ router.get(
   "/",
   auth(roles.hotelManager, roles.admin, roles.bhagwan),
   getAllRooms
+);
+
+router.patch(
+  "/avaibility/:roomNumber",
+  auth(roles.hotelManager, roles.admin, roles.bhagwan),
+  upateRoomAvailability
 );
 
 module.exports = router;

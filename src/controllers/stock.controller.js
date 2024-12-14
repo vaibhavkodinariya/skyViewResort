@@ -10,23 +10,27 @@ const updateStock = catchAsync(async (req, res) => {
     measure,
     newQuantity
   );
-  res.status(status.OK).send(
-    generateResponse(status.OK, {
-      updatedStock: updatedStock,
-      message: "Stock Updated",
-    })
-  );
+  if (updatedStock) {
+    res.status(status.OK).send(
+      generateResponse(status.OK, {
+        updatedStock: updatedStock,
+        message: "Stock Updated",
+      })
+    );
+  }
 });
 
 const setThreshold = catchAsync(async (req, res) => {
   const { itemId, newThreshold } = req.body;
   const stock = await stockService.setThreshold(itemId, newThreshold);
-  res.status(status.OK).send(
-    generateResponse(status.OK, {
-      updatedThreshold: stock,
-      message: "Threshold Updated",
-    })
-  );
+  if (stock) {
+    res.status(status.OK).send(
+      generateResponse(status.OK, {
+        updatedThreshold: stock,
+        message: "Threshold Updated",
+      })
+    );
+  }
 });
 
 const getItemsUnderThreshold = catchAsync(async (req, res) => {
@@ -60,7 +64,7 @@ const removeStock = catchAsync(async (req, res) => {
   const removedItem = await stockService.removeStock(id);
   if (!removedItem) {
     return res
-      .status(status.NOT_FOUND)
+      .status(status.OK)
       .send(generateResponse(status.NOT_FOUND, { message: "Not Found" }));
   }
   res.status(status.OK).send(

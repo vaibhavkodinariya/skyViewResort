@@ -33,6 +33,7 @@ router.patch(
 router.delete(
   "/:id",
   auth(roles.bhagwan, roles.restaurantManager),
+  validate({ params: stockValidator.removeStockSchema }),
   stockController.removeStock
 );
 

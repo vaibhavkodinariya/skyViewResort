@@ -4,6 +4,7 @@ const status = require("http-status");
 const ApiError = require("../utils/ApiError");
 const mongoose = require("mongoose");
 const config = require("../config/config");
+const generateResponse = require("../utils/common");
 
 exports.createOrder = async (orderData) => {
   const existingOrder = await Order.findOne({
@@ -124,16 +125,16 @@ exports.getOrderById = async (orderId) => {
     { $project: { menuItems: 0 } }, // Exclude unnecessary field
   ]);
 
-  if (!order || order.length === 0) {
-    throw new ApiError(status.NOT_FOUND, "Order Not Found");
-  }
-
   return order[0];
 };
 
-exports.updateOrderStatus = async (orderId, orderStatus, waiter) => {
+exports.updateOrderStatus = async (res, orderId, orderStatus, waiter) => {
   const order = await Order.findById(orderId);
-  if (!order) throw new ApiError(status.NOT_FOUND, "Order not found");
+  if (!order) {
+    return res
+      .status(status.OK)
+      .send(generateResponse(status.NOT_FOUND, { message: "Order not found" }));
+  }
   order.waiter = waiter;
   order.status = orderStatus;
   return await order.save();
@@ -143,11 +144,13 @@ exports.getAllOrders = async () => {
   return await Order.find();
 };
 
-exports.updateOrder = async (orderId, updateData) => {
+exports.updateOrder = async (res, orderId, updateData) => {
   const order = await Order.findById(orderId);
 
   if (!order) {
-    throw new ApiError(status.NOT_FOUND, "Order Not Found");
+    return res
+      .status(status.OK)
+      .send(generateResponse(status.NOT_FOUND, "Order Not Found"));
   }
 
   let totalAmount = order.totalAmount;

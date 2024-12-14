@@ -56,4 +56,14 @@ const addStock = Joi.object({
     }),
 });
 
-module.exports = { updateStock, updatedThreshold, addStock };
+const removeStockSchema = Joi.object({
+  id: Joi.string()
+    .regex(/^[0-9a-fA-F]{24}$/)
+    .required()
+    .messages({
+      "string.pattern.base": "Invalid ObjectId format",
+      "any.required": "Id is required",
+    }),
+});
+
+module.exports = { updateStock, updatedThreshold, addStock, removeStockSchema };

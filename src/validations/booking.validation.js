@@ -36,8 +36,9 @@ const bookingSchema = Joi.object({
       "any.required": "Customer phone is required",
     }),
 
-  room: Joi.array().items(Joi.number()).min(1).messages({
-    "any.min": "Must Contain One Room",
+  rooms: Joi.array().items(Joi.number()).required().min(1).messages({
+    "array.min": "Must Contain One Room",
+    "any.required": "Rooms is required",
   }),
 
   checkInDate: Joi.date().iso().required().messages({
@@ -89,7 +90,9 @@ const updateBookingSchema = Joi.object({
       "string.pattern.base": "Customer phone must be a 10-digit number",
       "string.empty": "Customer phone cannot be empty",
     }),
-  roomNumbers: Joi.array().items(Joi.number()).optional(),
+  rooms: Joi.array().items(Joi.number()).optional().min(1).messages({
+    "array.min": "Must Contain One Room",
+  }),
   checkInDate: Joi.date().iso().messages({
     "date.base": "Check-in date must be a valid date",
     "date.iso": "Check-in date must be in ISO format (YYYY-MM-DD)",

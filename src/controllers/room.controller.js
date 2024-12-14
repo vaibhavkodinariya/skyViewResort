@@ -7,10 +7,11 @@ const {
   updateRoom,
   getRooms,
 } = require("../services/room.service");
+const Room = require("../models/room.model");
 
 const getRoomDetails = catchAsync(async (req, res) => {
-  const room = await getRoomById(req.params.roomId);
-  res.status(status.OK).send(generateResponse(status.OK, room));
+  const room = await getRoomById(res, req.params.roomId);
+  if (room) res.status(status.OK).send(generateResponse(status.OK, room));
 });
 
 const addRoom = catchAsync(async (req, res) => {
@@ -39,13 +40,14 @@ const editRoom = catchAsync(async (req, res) => {
     url: `/uploads/rooms/${roomNumber}/${file.filename}`,
   }));
   const room = await updateRoom(roomNumber, price, photos, avaibility); // Update the room with new price and photos
-
-  res.status(status.OK).send(
-    generateResponse(status.OK, {
-      message: "Room details updated successfully",
-      room: room,
-    })
-  );
+  if (room) {
+    res.status(status.OK).send(
+      generateResponse(status.OK, {
+        message: "Room details updated successfully",
+        room: room,
+      })
+    );
+  }
 });
 
 const getAllRooms = catchAsync(async (req, res) => {
@@ -58,4 +60,22 @@ const getAllRooms = catchAsync(async (req, res) => {
   );
 });
 
-module.exports = { getRoomDetails, addRoom, editRoom, getAllRooms };
+const upateRoomAvailability = catchAsync(async (req, res) => {
+  await Room.updateOne(
+    { roomNumber: req.params?.roomNumber },
+    { $set: { availability: true } }
+  );
+  res.status(status.OK).send(
+    generateResponse(status.OK, {
+      message: "Room Available Now",
+    })
+  );
+});
+
+module.exports = {
+  getRoomDetails,
+  addRoom,
+  editRoom,
+  getAllRooms,
+  upateRoomAvailability,
+};

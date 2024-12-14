@@ -3,10 +3,16 @@ const ApiError = require("../utils/ApiError");
 const status = require("http-status");
 const fs = require("fs");
 const path = require("path");
+const generateResponse = require("../utils/common");
 
-const getRoomById = async (id) => {
+const getRoomById = async (res, id) => {
   const room = await Room.findOne({ roomNumber: id });
-  if (!room) throw new ApiError(status.NOT_FOUND, "Room Not Found");
+  if (!room) {
+    res
+      .status(status.OK)
+      .send(generateResponse(status.NOT_FOUND, { message: "Room Not Found" }));
+    return;
+  }
   return room;
 };
 
@@ -26,7 +32,11 @@ const createRoom = async (roomNumber, photos, price) => {
 const updateRoom = async (roomNumber, price, photos, avaibility) => {
   const room = await Room.findOne({ roomNumber: roomNumber });
 
-  if (!room) throw new ApiError(status.NOT_FOUND, "Room Not Found");
+  if (!room) {
+    return res
+      .status(status.OK)
+      .send(generateResponse(status.NOT_FOUND, { message: "Room Not Found" }));
+  }
 
   room.photos.forEach((oldPhoto) => {
     const oldPhotoPath = path.join(__dirname, "../public", oldPhoto.url);
@@ -40,8 +50,6 @@ const updateRoom = async (roomNumber, price, photos, avaibility) => {
 
   // If user is admin, allow updating price and amenities
   if (price) room.price = price;
-  //   if (req.user.role === "admin") {
-  //   }
 
   // Allow updating photos for both manager and admin
   if (photos) room.photos = photos;

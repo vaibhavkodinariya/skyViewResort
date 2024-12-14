@@ -51,4 +51,14 @@ const roomUpdateValidationSchema = Joi.object({
     }),
 });
 
-module.exports = { roomValidationSchema, roomUpdateValidationSchema };
+const roomUpdateAvaibilitySchema = Joi.object({
+  isAvailable: Joi.boolean().required().messages({
+    "any.required": "isAvailable Required",
+  }),
+});
+
+module.exports = {
+  roomValidationSchema,
+  roomUpdateValidationSchema,
+  roomUpdateAvaibilitySchema,
+};

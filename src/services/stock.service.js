@@ -1,28 +1,35 @@
 const status = require("http-status");
 const Stock = require("../models/stock.model");
 const ApiError = require("../utils/ApiError");
+const generateResponse = require("../utils/common");
 
 exports.updateStock = async (itemId, measure, newQuantity) => {
-  if (newQuantity < 0)
+  if (newQuantity < 0) {
     throw new ApiError(status.BAD_REQUEST, "Quantity cannot be negative.");
+  }
 
   const item = await Stock.findById(itemId);
-  if (!item) throw new ApiError(status.NOT_FOUND, "Item not found.");
+  if (!item) {
+    return res
+      .status(status.OK)
+      .send(generateResponse(status.NOT_FOUND, { message: "Item not found." }));
+  }
 
   item.quantity = newQuantity && newQuantity;
   item.measure = measure && measure;
-  await item.save();
-
-  return item;
+  return await item.save();
 };
 
 exports.setThreshold = async (itemId, newThreshold) => {
   const item = await Stock.findById(itemId);
-  if (!item) throw new ApiError(status.NOT_FOUND, "Item not found.");
+  if (!item) {
+    return res
+      .status(status.OK)
+      .send(generateResponse(status.NOT_FOUND, { message: "Item not found." }));
+  }
 
   item.threshold = newThreshold;
-  await item.save();
-  return item;
+  return await item.save();
 };
 
 exports.getItemsUnderThreshold = async () => {

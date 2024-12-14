@@ -3,6 +3,7 @@ const Booking = require("../models/bookings.model");
 const ApiError = require("../utils/ApiError");
 const status = require("http-status");
 const config = require("../config/config");
+const generateResponse = require("../utils/common");
 
 const createBooking = async (
   customerName,
@@ -82,18 +83,24 @@ const createBooking = async (
   return;
 };
 
-const getBookings = async () => {
+const getBookings = async (res) => {
   const bookings = await Booking.find().populate("rooms", "roomNumber price");
   if (!bookings.length) {
-    throw new ApiError(status.NOT_FOUND, "No bookings found");
+    return res
+      .status(status.OK)
+      .send(
+        generateResponse(status.NOT_FOUND, { message: "No bookings found" })
+      );
   }
   return bookings;
 };
 
-const roomWiseBooking = async (roomNumber) => {
+const roomWiseBooking = async (res, roomNumber) => {
   const room = await Room.findOne({ roomNumber: roomNumber });
   if (!room) {
-    throw new ApiError(status.NOT_FOUND, "Room not found");
+    return res
+      .status(status.OK)
+      .send(generateResponse(status.NOT_FOUND, { message: "Room not found" }));
   }
 
   const bookings = await Booking.find({ rooms: { $in: [room._id] } }).populate(
@@ -102,7 +109,11 @@ const roomWiseBooking = async (roomNumber) => {
   );
 
   if (!bookings.length) {
-    throw new ApiError(status.NOT_FOUND, "No bookings found for this room");
+    return res.status(status.OK).send(
+      generateResponse(status.NOT_FOUND, {
+        message: "No bookings found for this room",
+      })
+    );
   }
   return bookings;
 };

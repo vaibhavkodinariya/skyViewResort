@@ -8,6 +8,13 @@ const bookingSchema = Joi.object({
     "string.max": "Customer name should not exceed 50 characters",
     "any.required": "Customer name is required",
   }),
+  bookingStatus: Joi.string()
+    .valid("pending", "confirmed", "completed", "cancelled")
+    .messages({
+      "string.base": "Status must be a string.",
+      "any.only":
+        "Status must be one of ['pending', 'confirmed', 'completed', 'cancelled'].",
+    }),
   adhaarCard: Joi.string()
     .length(12) // Aadhaar card must be 12 characters long
     .pattern(/^[0-9]{12}$/) // Only numeric values allowed
@@ -73,7 +80,13 @@ const updateBookingSchema = Joi.object({
       "string.length": "Aadhaar card number must be exactly 12 digits.",
       "string.pattern.base": "Aadhaar card number must contain only digits.",
     }),
-
+  bookingStatus: Joi.string()
+    .valid("pending", "confirmed", "completed", "cancelled")
+    .messages({
+      "string.base": "Status must be a string.",
+      "any.only":
+        "Status must be one of ['pending', 'confirmed', 'completed', 'cancelled'].",
+    }),
   discount: Joi.number().min(0).messages({
     "number.min": "Discount amount must be positive",
   }),

@@ -29,6 +29,7 @@ const addBooking = catchAsync(async (req, res) => {
     checkInDate,
     checkOutDate,
     paymentMethod,
+    bookingStatus,
   } = req.body;
 
   await createBooking(
@@ -39,7 +40,8 @@ const addBooking = catchAsync(async (req, res) => {
     discount,
     checkInDate,
     checkOutDate,
-    paymentMethod
+    paymentMethod,
+    bookingStatus
   );
 
   res.status(status.CREATED).send(
@@ -89,7 +91,8 @@ const editBooking = catchAsync(async (req, res) => {
     req.body?.discount,
     req.body?.adhaarCard,
     req.body?.rooms,
-    req.body?.paymentMethod
+    req.body?.paymentMethod,
+    req.body?.bookingStatus
   );
 
   res.status(status.OK).send(

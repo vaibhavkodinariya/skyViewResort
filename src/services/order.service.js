@@ -44,9 +44,9 @@ exports.createOrder = async (orderData) => {
   return await order.save();
 };
 
-exports.getOrderById = async (orderId) => {
+exports.getOrderById = async (tableNumber) => {
   const order = await Order.aggregate([
-    { $match: { _id: new mongoose.Types.ObjectId(orderId) } },
+    { $match: { tableNumber: tableNumber } },
     {
       $lookup: {
         from: "menuitems",

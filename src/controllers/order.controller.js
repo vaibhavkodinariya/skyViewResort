@@ -17,8 +17,8 @@ const createOrder = catchAsync(async (req, res, next) => {
 });
 
 const getOrderById = catchAsync(async (req, res, next) => {
-  const orderId = req.params.id;
-  const order = await OrderService.getOrderById(orderId);
+  const tableNumber = req.params.id;
+  const order = await OrderService.getOrderById(tableNumber);
   res.status(status.OK).send(
     generateResponse(status.OK, {
       order: order,

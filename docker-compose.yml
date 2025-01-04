@@ -13,6 +13,9 @@ services:
       - ./src/public:/backend/src/public
       - ./logs:/backend/logs
     restart: always
+    networks:
+      - resort-network
+
   mongo:
     image: mongo:latest
     ports:
@@ -20,14 +23,12 @@ services:
     volumes:
       - ./mongo-data:/data/db
     restart: always
-  nginx:
-    image: nginx:latest
-    container_name: nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./certs:/certs:ro # Map your certificates folder
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - resort-network
+
 volumes:
   mongo-data:
+
+networks:
+  resort-network:
+    external: true

@@ -121,15 +121,15 @@ const downloadBill = catchAsync(async (req, res) => {
   // Data to pass into the template
   const data = {
     hotelName: "Sky View Resort",
-    hotelAddress: "XYZ Colony, Bhuj",
-    hotelPhone: "3848384438",
+    hotelAddress: "Sukhpar-Mankuva Highway, Tal. Bhuj, Dist. Kutch,370040",
+    hotelPhone: "+91 9909866657 | 9909266657",
     customerName: booking.customerName,
     roomNumber: booking.rooms.map((room) => room.roomNumber).join(", "),
     checkIn: booking.checkInDate.toDateString(),
     checkOut: booking.checkOutDate.toDateString(),
     invoiceNumber: `#${booking.invoiceNumber}`,
     invoiceDate: new Date().toLocaleDateString(),
-    paymentMethod: "Cash",
+    paymentMethod: booking.paymentMethod,
     items: booking.rooms.map((room) => ({
       description: `Room: ${room.roomNumber}`,
       unitPrice: `${room.price} * ${duration}`,

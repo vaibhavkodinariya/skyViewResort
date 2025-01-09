@@ -54,16 +54,11 @@ const bookingSchema = Joi.object({
     "any.required": "Check-in date is required",
   }),
 
-  checkOutDate: Joi.date()
-    .iso()
-    .min(Joi.ref("checkInDate"))
-    .required()
-    .messages({
-      "date.base": "Check-out date must be a valid date",
-      "date.iso": "Check-out date must be in ISO format (YYYY-MM-DD)",
-      "date.min": "Check-out date must be after the check-in date",
-      "any.required": "Check-out date is required",
-    }),
+  checkOutDate: Joi.date().iso().greater(Joi.ref("checkInDate")).messages({
+    "date.base": "Check-out date must be a valid date",
+    "date.iso": "Check-out date must be in ISO format (YYYY-MM-DD)",
+    "date.greater": "Check-out date must be after the check-in date",
+  }),
 });
 
 const updateBookingSchema = Joi.object({
@@ -106,15 +101,16 @@ const updateBookingSchema = Joi.object({
   rooms: Joi.array().items(Joi.number()).optional().min(1).messages({
     "array.min": "Must Contain One Room",
   }),
+
   checkInDate: Joi.date().iso().messages({
     "date.base": "Check-in date must be a valid date",
     "date.iso": "Check-in date must be in ISO format (YYYY-MM-DD)",
   }),
 
-  checkOutDate: Joi.date().iso().min(Joi.ref("checkInDate")).messages({
+  checkOutDate: Joi.date().iso().greater(Joi.ref("checkInDate")).messages({
     "date.base": "Check-out date must be a valid date",
     "date.iso": "Check-out date must be in ISO format (YYYY-MM-DD)",
-    "date.min": "Check-out date must be after the check-in date",
+    "date.greater": "Check-out date must be after the check-in date",
   }),
 })
   .or(

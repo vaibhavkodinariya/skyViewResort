@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hotel Invoice (Landscape)</title>
     <style>
-        body {
+        .page {
             font-family: "Arial", sans-serif;
             margin: 0;
             padding: 0;
         }
 
-        .invoice-container {
+        .container {
             width: 100%;
             max-width: 900px;
             margin: 20px auto;
@@ -23,90 +23,93 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .header {
+        .flex {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
         }
 
-        .header .partner-logo {
-            flex: 1;
+        .space-between {
+            justify-content: space-between;
+        }
+
+        .align-center {
+            align-items: center;
+        }
+
+        .text-left {
             text-align: left;
         }
 
-        .header .hotel-logo {
-            flex: 2;
+        .text-center {
             text-align: center;
         }
 
-        .header .hotel-logo img {
-            max-height: 100px;
-        }
-
-        .header .details {
-            flex: 1;
+        .text-right {
             text-align: right;
         }
 
-        .header .details h1 {
+        .text-bold {
+            font-weight: bold;
+        }
+
+        .text-highlight {
+            color: #c6932d;
+        }
+
+        .margin-bottom {
+            margin-bottom: 20px;
+        }
+
+        .header img {
+            max-height: 100px;
+        }
+
+        .hotel-logo img {
+            max-height: 100px;
+        }
+
+        .details-title {
             margin: 0;
             font-size: 20px;
             color: #c6932d;
         }
 
-        .header .details p {
+        .details-text {
             margin: 3px 0;
             font-size: 13px;
             color: #333;
         }
 
-        hr {
+        .divider {
             border: none;
             border-top: 2px solid #c6932d;
             margin: 20px 0;
         }
 
-        .content {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .content .customer-details,
-        .content .invoice-details {
+        .details-paragraph {
             font-size: 14px;
-        }
-
-        .content .customer-details p,
-        .content .invoice-details p {
             margin: 5px 0;
         }
 
-        .content .invoice-details {
-            text-align: right;
-        }
-
-        table {
+        .table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
 
-        table th,
-        table td {
+        .table-header,
+        .table-data {
             padding: 10px 15px;
             font-size: 14px;
             text-align: left;
             border: 1px solid #ddd;
         }
 
-        table th {
+        .table-header {
             background-color: #c6932d;
             color: #ffffff;
         }
 
-        table .total-row td {
+        .total-row {
             font-weight: bold;
             border-top: 2px solid #c6932d;
         }
@@ -117,92 +120,88 @@
             color: #333;
         }
 
-        .footer .thankyou {
+        .thankyou {
             font-size: 15px;
             color: #c6932d;
             font-weight: bold;
         }
 
-        .footer .qr-code {
-            margin-top: 10px;
-        }
-
-        .footer .qr-code img {
+        .qr-code img {
             max-height: 80px;
         }
     </style>
 </head>
 
-<body>
-    <div class="invoice-container">
+<body class="page">
+    <div class="container">
         <!-- Header -->
-        <div class="header">
-            <div class="partner-logo">
+        <div class="header flex space-between align-center margin-bottom">
+            <div class="partner-logo text-left">
                 <img src="{{partnerLogo}}" width="80px" alt="Partner Logo" />
             </div>
-            <div class="hotel-logo">
-                <img src="{{hotelLogo}}" width="300px" alt="Hotel Logo" />
+            <div class="hotel-logo text-center">
+                <img src="{{hotelLogo}}" alt="Hotel Logo" />
             </div>
-            <div class="details">
-                <h1>Sky View Resort</h1>
-                <p>XYZ Colony,Bhuj</p>
-                <p><strong>Phone:</strong> 3848384438</p>
+            <div class="details text-right">
+                <h1 class="details-title">{{hotelName}}</h1>
+                <p class="details-text">{{hotelAddress}}</p>
+                <p class="details-text"><strong>Phone:</strong> {{hotelPhone}}</p>
             </div>
         </div>
 
-        <hr />
+        <hr class="divider" />
 
         <!-- Content -->
-        <div class="content">
-            <div class="customer-details">
-                <p><strong>Customer Name:</strong> {{customerName}}</p>
-                <p><strong>Room No:</strong> {{roomNumber}}</p>
-                <p><strong>Check-in:</strong> {{checkIn}}</p>
-                <p><strong>Check-out:</strong> {{checkOut}}</p>
+        <div class="content flex space-between margin-bottom">
+            <div class="customer-details text-left">
+                <p class="details-paragraph"><strong>Customer Name:</strong> {{customerName}}</p>
+                <p class="details-paragraph"><strong>Room No:</strong> {{roomNumber}}</p>
+                <p class="details-paragraph"><strong>Check-in:</strong> {{checkIn}}</p>
+                <p class="details-paragraph"><strong>Check-out:</strong> {{checkOut}}</p>
             </div>
-            <div class="invoice-details">
-                <p><strong>Invoice No:</strong> {{invoiceNumber}}</p>
-                <p><strong>Date:</strong> {{invoiceDate}}</p>
-                <p><strong>Payment Method:</strong> {{paymentMethod}}</p>
+            <div class="invoice-details text-right">
+                <p class="details-paragraph"><strong>Invoice No:</strong> {{invoiceNumber}}</p>
+                <p class="details-paragraph"><strong>Date:</strong> {{invoiceDate}}</p>
+                <p class="details-paragraph"><strong>Payment Method:</strong> {{paymentMethod}}</p>
             </div>
         </div>
 
         <!-- Table -->
-        <table>
+        <table class="table">
             <thead>
                 <tr>
-                    <th>Description</th>
-                    <th>Unit Price (₹)</th>
-                    <th>Total (₹)</th>
+                    <th class="table-header">Description</th>
+                    <th class="table-header">Unit Price (₹)</th>
+                    <th class="table-header">Total (₹)</th>
                 </tr>
             </thead>
             <tbody>
                 {{#each items}}
                 <tr>
-                    <td>{{description}}</td>
-                    <td>{{unitPrice}}</td>
-                    <td>{{total}}</td>
+                    <td class="table-data">{{description}}</td>
+                    <td class="table-data">{{unitPrice}}</td>
+                    <td class="table-data">{{total}}</td>
                 </tr>
                 {{/each}}
             </tbody>
             <tfoot>
                 {{#if discount}}
                 <tr>
-                    <td colspan="2">Discount</td>
-                    <td>- {{discount}}</td>
+                    <td colspan="2" class="table-data">Discount</td>
+                    <td class="table-data">- {{discount}}</td>
                 </tr>
                 {{/if}}
                 <tr class="total-row">
-                    <td colspan="2">Subtotal</td>
-                    <td>{{subtotal}}</td>
+                    <td colspan="2" class="table-data">Subtotal</td>
+                    <td class="table-data">{{subtotal}}</td>
                 </tr>
                 <tr>
-                    <td colspan="2">GST (12%)</td>
-                    <td>{{gst}}</td>
+                    <td colspan="2" class="table-data">GST (12%)</td>
+                    <td class="table-data">{{gst}}</td>
                 </tr>
                 <tr class="total-row">
-                    <td colspan="2">Final Total</td>
-                    <td><span style="color: #c6932d">₹{{grandTotal}}</span></td>
+                    <td colspan="2" class="table-data">Final Total</td>
+                    <td class="table-data"><span class="text-highlight">₹{{grandTotal}}</span></td>
                 </tr>
             </tfoot>
         </table>

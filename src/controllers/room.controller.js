@@ -36,9 +36,12 @@ const addRoom = catchAsync(async (req, res) => {
 const editRoom = catchAsync(async (req, res) => {
   const { roomNumber } = req.params;
   const { price, avaibility } = req.body;
-  const photos = req.files.map((file) => ({
-    url: `/uploads/rooms/${roomNumber}/${file.filename}`,
-  }));
+  let photos;
+  if (req.files) {
+    photos = req.files.map((file) => ({
+      url: `/uploads/rooms/${roomNumber}/${file.filename}`,
+    }));
+  }
   const room = await updateRoom(roomNumber, price, photos, avaibility); // Update the room with new price and photos
   if (room) {
     res.status(status.OK).send(

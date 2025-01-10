@@ -37,22 +37,23 @@ const updateRoom = async (roomNumber, price, photos, avaibility) => {
       .status(status.OK)
       .send(generateResponse(status.NOT_FOUND, { message: "Room Not Found" }));
   }
+  if (photos?.length > 0) {
+    room.photos.forEach((oldPhoto) => {
+      const oldPhotoPath = path.join(__dirname, "../public", oldPhoto.url);
 
-  room.photos.forEach((oldPhoto) => {
-    const oldPhotoPath = path.join(__dirname, "../public", oldPhoto.url);
-
-    fs.unlink(oldPhotoPath, (err) => {
-      if (err) {
-        console.error(`Failed to delete old image: ${oldPhotoPath}`, err);
-      }
+      fs.unlink(oldPhotoPath, (err) => {
+        if (err) {
+          console.error(`Failed to delete old image: ${oldPhotoPath}`, err);
+        }
+      });
     });
-  });
+  }
 
   // If user is admin, allow updating price and amenities
   if (price) room.price = price;
 
   // Allow updating photos for both manager and admin
-  if (photos) room.photos = photos;
+  if (photos?.length > 0) room.photos = photos;
 
   if (avaibility) room.avaibility = avaibility;
 

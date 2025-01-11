@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Restaurant Bill</title>
+    <style>
+        .document {
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            border-style: dashed;
+            width: 250px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .header,
+        .logos,
+        .footer {
+            text-align: center;
+        }
+
+        .logos {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .logosimg {
+            max-width: 85px;
+            height: auto;
+            margin: 0 5px;
+        }
+
+        .line {
+            border: none;
+            border-top: 1px dashed #000;
+            margin: 10px 0;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+
+        .table th,
+        .table td {
+            text-align: left;
+            padding: 2px 0;
+        }
+
+        .total-row {
+            border-top: 1px solid #000;
+            font-weight: bold;
+        }
+
+        .text-right {
+            text-align: right !important;
+        }
+
+        .order-details-heading {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="document">
+        <div class="container">
+            <!-- Logos Section -->
+            <div class="logos">
+                <div class="logo-left">
+                    <img class="logo-img" src="{{hotelLogo}}" alt="Restaurant Logo" width="100px" height="auto" />
+                </div>
+                <div class="logo-right">
+                    <img class="logosimg" src="{{partnerLogo}}" alt="Partner Logo" width="90px" height="auto" />
+                </div>
+            </div>
+            <div class="line" />
+
+            <!-- Restaurant Header -->
+            <div class="header">
+                <h1 class="restaurant-name">{{hotelName}}</h1>
+                <p class="restaurant-address">{{hotelAddress}}</p>
+                <p class="restaurant-phone">Ph: {{hotelPhone}}</p>
+            </div>
+            <div class="line" />
+
+            <!-- Bill Details -->
+            <div class="bill-details">
+                <p><strong>Bill No:</strong> {{orderNumber}}</p>
+                <p><strong>Date:</strong> {{createdAt}}</p>
+                <p><strong>Table No:</strong> {{tableNumber}}</p>
+            </div>
+            <div class="line" />
+
+            <!-- Order Summary -->
+            <h2 class="order-details-heading">Order Details</h2>
+            <table class="order-summary-table table">
+                <thead>
+                    <tr>
+                        <th class="item-name">Item</th>
+                        <th class="item-qty text-right">Qty</th>
+                        <th class="item-price text-right">Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each items}}
+                    <tr>
+                        <td>{{menuItem.name}}</td>
+                        <td class="text-right">{{quantity}}</td>
+                        <td class="text-right">₹{{itemTotalAmount}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td class="total-label">Subtotal</td>
+                        <td class="total-amount text-right" colspan="2">₹{{totalAmount}}</td>
+                    </tr>
+                    {{#if discount}}
+                    <tr class="discount-row">
+                        <td class="discount-label">Discount</td>
+                        <td class="discount-amount text-right" colspan="2">-₹{{discount}}</td>
+                    </tr>
+                    {{/if}}
+                    <tr class="gst-row">
+                        <td class="gst-label">GST ({{gstRate}}%)</td>
+                        <td class="gst-amount text-right" colspan="2">₹{{gstAmount}}</td>
+                    </tr>
+                    <tr class="total-row grand-total">
+                        <td class="grand-total-label">Grand Total</td>
+                        <td class="grand-total-amount text-right" colspan="2">₹{{totalAmountPlusGST}}</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="line" />
+
+            <!-- Footer -->
+            <div class="footer">
+                <p>Thank you for dining with us!</p>
+                <p>Visit Again</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

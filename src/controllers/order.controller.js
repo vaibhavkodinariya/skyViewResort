@@ -2,8 +2,18 @@ const OrderService = require("../services/order.service");
 const catchAsync = require("../utils/catchAsync");
 const status = require("http-status");
 const generateResponse = require("../utils/common");
-const ApiError = require("../utils/ApiError");
 const Order = require("../models/order.model");
+const hbs = require("hbs");
+const fs = require("fs");
+const path = require("path");
+const moment = require("moment");
+const config = require("../config/config");
+
+const compileTemplate = (filePath, data) => {
+  const templateContent = fs.readFileSync(filePath, "utf-8");
+  const compiledTemplate = hbs.compile(templateContent);
+  return compiledTemplate(data);
+};
 
 const createOrder = catchAsync(async (req, res, next) => {
   const orderData = req.body;
@@ -32,7 +42,7 @@ const updateOrderStatus = catchAsync(async (req, res, next) => {
   const orderStatus = req.body.status;
   const waiter = req.user._id;
   await OrderService.updateOrderStatus(res, orderId, orderStatus, waiter);
-  res.status(status.OK).send(
+  return res.status(status.OK).send(
     generateResponse(status.OK, {
       message: "Order Status Updated Successfully",
     })
@@ -41,7 +51,7 @@ const updateOrderStatus = catchAsync(async (req, res, next) => {
 
 const getAllOrders = catchAsync(async (req, res, next) => {
   const orders = await OrderService.getAllOrders();
-  res.status(status.OK).send(
+  return res.status(status.OK).send(
     generateResponse(status.OK, {
       orders: orders,
       message: "Orders Fetched Successfully",
@@ -55,7 +65,7 @@ const updateOrder = catchAsync(async (req, res, next) => {
   updateData.waiter = req.user._id;
   const updatedOrder = await OrderService.updateOrder(res, id, updateData);
   if (updatedOrder) {
-    res.status(status.OK).send(
+    return res.status(status.OK).send(
       generateResponse(status.OK, {
         updatedOrder: updatedOrder,
         message: "Order Updated Successfully",
@@ -75,9 +85,37 @@ const deleteOrder = catchAsync(async (req, res, next) => {
 });
 
 const billGeneration = catchAsync(async (req, res) => {
-  const { orderNumber } = req.body;
-  const items = await Order.find({ orderNumber: { $in: orderNumber } });
-  res.send(items);
+  const { tableNumber } = req.body;
+  const orderList = await Order.findOne({
+    tableNumber: tableNumber,
+    status: "pending",
+  })
+    .populate("items.menuItem")
+    .lean();
+
+  orderList.items.map((item) => {
+    item["itemTotalAmount"] = item.quantity * item.menuItem.price;
+  });
+  orderList["hotelName"] = "Sky View Resort";
+  orderList["hotelAddress"] =
+    "Sukhpar-Mankuva Highway, Tal. Bhuj, Dist. Kutch,370040";
+  orderList["hotelPhone"] = "+91 9909866657 | 9909266657";
+  orderList.createdAt = moment(orderList.createdAt).format("DD-MM-YYYY");
+  orderList["totalAmountPlusGST"] = orderList.totalAmount + orderList.gstAmount;
+
+  if (orderList?.discount > 0) {
+    orderList["totalAmountPlusGST"] =
+      orderList["totalAmountPlusGST"] - orderList.discount;
+  }
+  orderList["hotelLogo"] = `${config.baseUrl}/images/skyView.svg`;
+  orderList["partnerLogo"] = `${config.baseUrl}/images/chotuRestoLogo.png`;
+  orderList["totalAmountPlusGST"] = parseInt(orderList["totalAmountPlusGST"]);
+  const html = compileTemplate(
+    path.resolve(__dirname, "../views/restoBilling.hbs"),
+    orderList
+  );
+
+  res.status(200).send(generateResponse(status.OK, { html: html }));
 });
 
 module.exports = {

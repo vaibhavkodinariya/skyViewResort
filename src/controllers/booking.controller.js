@@ -76,7 +76,7 @@ const getRoomWiseBooking = catchAsync(async (req, res) => {
 const editBooking = catchAsync(async (req, res) => {
   const { bookingId } = req.params;
 
-  const booking = await updateBookings(
+  await updateBookings(
     req.body?.customerName,
     req.body?.customerPhone,
     req.body?.checkInDate,
@@ -92,7 +92,6 @@ const editBooking = catchAsync(async (req, res) => {
   res.status(status.OK).send(
     generateResponse(status.OK, {
       message: "Booking updated successfully",
-      data: booking,
     })
   );
 });

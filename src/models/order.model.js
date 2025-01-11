@@ -4,7 +4,7 @@ const orderSchema = new mongoose.Schema(
   {
     orderNumber: {
       type: Number,
-      unique: true, // Ensure the order number is unique
+      unique: true,
     },
     tableNumber: {
       type: String,

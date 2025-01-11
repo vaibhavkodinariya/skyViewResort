@@ -97,6 +97,18 @@ const editBooking = catchAsync(async (req, res) => {
   );
 });
 
+const deleteBooking = catchAsync(async (req, res) => {
+  const { bookingId } = req.params;
+
+  await Booking.deleteOne({ _id: bookingId });
+
+  return res.status(status.OK).send(
+    generateResponse(status.OK, {
+      message: "Booking Deleted successfully",
+    })
+  );
+});
+
 const downloadBill = catchAsync(async (req, res) => {
   const { bookingId } = req.params;
 
@@ -149,5 +161,6 @@ module.exports = {
   getAllBookings,
   getRoomWiseBooking,
   editBooking,
+  deleteBooking,
   downloadBill,
 };

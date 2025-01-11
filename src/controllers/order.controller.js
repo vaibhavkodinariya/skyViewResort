@@ -8,7 +8,7 @@ const Order = require("../models/order.model");
 const createOrder = catchAsync(async (req, res, next) => {
   const orderData = req.body;
   orderData.waiter = req.user._id;
-  const order = await OrderService.createOrder(orderData);
+  await OrderService.createOrder(orderData);
   res.status(status.CREATED).send(
     generateResponse(status.CREATED, {
       message: "Order Placed Successfully",
@@ -64,6 +64,16 @@ const updateOrder = catchAsync(async (req, res, next) => {
   }
 });
 
+const deleteOrder = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  await Order.deleteOne({ _id: id });
+  return res.status(status.OK).send(
+    generateResponse(status.OK, {
+      message: "Order Deleted successfully",
+    })
+  );
+});
+
 const billGeneration = catchAsync(async (req, res) => {
   const { orderNumber } = req.body;
   const items = await Order.find({ orderNumber: { $in: orderNumber } });
@@ -77,4 +87,5 @@ module.exports = {
   getAllOrders,
   updateOrder,
   billGeneration,
+  deleteOrder,
 };

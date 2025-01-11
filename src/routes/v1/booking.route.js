@@ -29,7 +29,11 @@ router.put(
   validate({ body: bookingValidations.updateBookingSchema }),
   bookingController.editBooking
 );
-
+router.delete(
+  "/:bookingId",
+  auth(roles.bhagwan, roles.hotelManager),
+  bookingController.deleteBooking
+);
 router.get(
   "/generateBill/:bookingId",
   auth(roles.bhagwan, roles.hotelManager, roles.admin),

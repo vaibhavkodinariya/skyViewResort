@@ -7,20 +7,21 @@ const config = require("../config/config");
 const generateResponse = require("../utils/common");
 
 exports.createOrder = async (orderData) => {
-  const existingOrder = await Order.findOne({
-    tableNumber: orderData.tableNumber,
-    status: "Pending",
-  }).lean();
+  if (orderData.tableNumber != "parcel") {
+    const existingOrder = await Order.findOne({
+      tableNumber: orderData.tableNumber,
+      status: "Pending",
+    }).lean();
 
-  if (existingOrder) {
-    throw new ApiError(
-      status.BAD_REQUEST,
-      `An order for table number ${orderData.tableNumber} is already reserved.`
-    );
+    if (existingOrder) {
+      throw new ApiError(
+        status.BAD_REQUEST,
+        `An order for table number ${orderData.tableNumber} is already reserved.`
+      );
+    }
   }
 
   let totalAmount = 0;
-
   // Calculate the total amount
   for (const item of orderData.items) {
     const menuItem = await MenuItem.findById(item.menuItem).lean();
@@ -148,15 +149,12 @@ exports.updateOrder = async (res, orderId, updateData) => {
   const order = await Order.findById(orderId);
 
   if (!order) {
-    return res
-      .status(status.OK)
-      .send(generateResponse(status.NOT_FOUND, "Order Not Found"));
+    throw new ApiError(status.OK, "Order Not Found");
   }
-
   let totalAmount = order.totalAmount;
 
   // If items are updated, recalculate the total amount
-  if (updateData.items) {
+  if (updateData.items?.length) {
     totalAmount = 0;
     for (const item of updateData.items) {
       const menuItem = await MenuItem.findById(item.menuItem).lean();
@@ -173,13 +171,12 @@ exports.updateOrder = async (res, orderId, updateData) => {
     }
   });
 
-  const gstAmount = totalAmount * config.gst.foodGst;
-  totalAmount += gstAmount;
-  // Set the new total amount if recalculated
-  order.gstAmount = gstAmount;
-  order.totalAmount = totalAmount;
-  if (updateData.discount) {
-    order.totalAmount = order.totalAmount - updateData.discount;
+  if (order.totalAmount != totalAmount) {
+    const gstAmount = totalAmount * config.gst.foodGst;
+    // Set the new total amount if recalculated
+    order.gstAmount = gstAmount;
+    order.totalAmount = totalAmount;
   }
+
   return await order.save();
 };

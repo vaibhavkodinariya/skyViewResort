@@ -34,7 +34,11 @@ router.put(
   validate({ body: orderValidations.updateOrder }),
   orderController.updateOrder
 );
-
+router.delete(
+  "/:id",
+  auth(roles.bhagwan, roles.restaurantManager),
+  orderController.deleteOrder
+);
 router.post("/billGenerate", orderController.billGeneration);
 
 module.exports = router;

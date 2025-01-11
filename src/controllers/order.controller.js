@@ -85,9 +85,9 @@ const deleteOrder = catchAsync(async (req, res, next) => {
 });
 
 const billGeneration = catchAsync(async (req, res) => {
-  const { tableNumber } = req.body;
+  const { orderId } = req.body;
   const orderList = await Order.findOne({
-    tableNumber: tableNumber,
+    _id: orderId,
     status: "pending",
   })
     .populate("items.menuItem")

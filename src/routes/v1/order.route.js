@@ -39,6 +39,10 @@ router.delete(
   auth(roles.bhagwan, roles.restaurantManager),
   orderController.deleteOrder
 );
-router.post("/billGenerate", orderController.billGeneration);
+router.post(
+  "/billGenerate",
+  auth(roles.bhagwan, roles.restaurantManager),
+  orderController.billGeneration
+);
 
 module.exports = router;

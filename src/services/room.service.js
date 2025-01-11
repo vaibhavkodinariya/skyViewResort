@@ -60,7 +60,47 @@ const updateRoom = async (roomNumber, price, photos, avaibility) => {
   return await room.save();
 };
 
-const getRooms = () => {
-  return Room.find({});
+const getRooms = async () => {
+  const currentDate = new Date();
+
+  const roomsWithFlag = await Room.aggregate([
+    {
+      $lookup: {
+        from: "bookings", // Collection to join
+        localField: "_id", // Field in the Room schema
+        foreignField: "rooms", // Field in the Booking schema
+        as: "bookings",
+      },
+    },
+    {
+      $addFields: {
+        isBooked: {
+          $anyElementTrue: {
+            $map: {
+              input: "$bookings",
+              as: "booking",
+              in: {
+                $and: [
+                  { $lte: ["$$booking.checkInDate", currentDate] },
+                  { $gte: ["$$booking.checkOutDate", currentDate] },
+                ],
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        roomNumber: 1,
+        photos: 1,
+        price: 1,
+        amenities: 1,
+        availability: { $not: "$isBooked" }, // Add availability flag
+      },
+    },
+  ]);
+  return roomsWithFlag;
 };
+
 module.exports = { getRoomById, createRoom, updateRoom, getRooms };

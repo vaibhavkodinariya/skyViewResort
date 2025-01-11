@@ -67,15 +67,9 @@ const getAllBookings = catchAsync(async (req, res) => {
 const getRoomWiseBooking = catchAsync(async (req, res) => {
   const { roomNumber } = req.params;
 
-  const bookings = await roomWiseBooking(res, roomNumber);
-  if (bookings) {
-    res.status(status.OK).send(
-      generateResponse(status.OK, {
-        message: "Booking Fetched Successfully",
-        results: bookings.length,
-        booking: bookings,
-      })
-    );
+  const response = await roomWiseBooking(res, roomNumber);
+  if (response) {
+    return res.status(status.OK).send(response);
   }
 });
 
@@ -139,7 +133,6 @@ const downloadBill = catchAsync(async (req, res) => {
     subtotal: booking.totalPrice - booking.gstAmount,
     gst: booking.gstAmount,
     grandTotal: booking.totalPrice,
-    partnerLogo: `${config.baseUrl}/images/CM-Logo.png`,
     hotelLogo: `${config.baseUrl}/images/skyView.svg`,
   };
 

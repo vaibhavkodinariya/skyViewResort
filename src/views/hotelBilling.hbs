@@ -6,6 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hotel Invoice (Landscape)</title>
     <style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hotel-logo img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .details {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .hotel-logo {
+            flex-shrink: 0;
+            width: auto;
+        }
+
         .page {
             font-family: "Arial", sans-serif;
             margin: 0;
@@ -60,10 +82,6 @@
         }
 
         .header img {
-            max-height: 100px;
-        }
-
-        .hotel-logo img {
             max-height: 100px;
         }
 
@@ -135,20 +153,22 @@
 <body class="page">
     <div class="container">
         <!-- Header -->
-        <div class="header flex space-between align-center margin-bottom">
-            <div class="partner-logo text-left">
-                <img src="{{partnerLogo}}" width="80px" alt="Partner Logo" />
+        <div class="header">
+            <!-- Hotel Logo (replaced partner logo with SkyView logo) -->
+            <div class="hotel-logo">
+                <img src="{{hotelLogo}}" alt="SkyView Logo" width="200px" height="auto" />
             </div>
-            <div class="hotel-logo text-center">
-                <img src="{{hotelLogo}}" alt="Hotel Logo" />
-            </div>
-            <div class="details text-right">
+            <!-- Details -->
+            <div class="details">
                 <h1 class="details-title">{{hotelName}}</h1>
-                <p class="details-text">{{hotelAddress}}</p>
-                <p class="details-text"><strong>Phone:</strong> {{hotelPhone}}</p>
+                <p class="details-text">
+                    {{hotelAddress}}
+                </p>
+                <p class="details-text">
+                    <strong>Phone:</strong> {{hotelPhone}}
+                </p>
             </div>
         </div>
-
         <hr class="divider" />
 
         <!-- Content -->

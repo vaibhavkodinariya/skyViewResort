@@ -100,9 +100,7 @@ const getBookings = async (res) => {
 const roomWiseBooking = async (res, roomNumber) => {
   const room = await Room.findOne({ roomNumber: roomNumber });
   if (!room) {
-    return res
-      .status(status.OK)
-      .send(generateResponse(status.NOT_FOUND, { message: "Room not found" }));
+    return generateResponse(status.NOT_FOUND, { message: "Room not found" });
   }
 
   const bookings = await Booking.find({ rooms: { $in: [room._id] } }).populate(
@@ -110,14 +108,16 @@ const roomWiseBooking = async (res, roomNumber) => {
     "roomNumber price"
   );
 
-  if (!bookings.length) {
-    return res.status(status.OK).send(
-      generateResponse(status.NOT_FOUND, {
-        message: "No bookings found for this room",
-      })
-    );
+  if (!bookings?.length) {
+    return generateResponse(status.NOT_FOUND, {
+      message: "No bookings found for this room",
+    });
   }
-  return bookings;
+  return generateResponse(status.OK, {
+    message: "Booking Fetched Successfully",
+    results: bookings.length,
+    booking: bookings,
+  });
 };
 
 const updateBookings = async (

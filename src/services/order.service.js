@@ -125,7 +125,7 @@ exports.getOrderById = async (tableNumber) => {
     { $project: { menuItems: 0 } }, // Exclude unnecessary field
   ]);
 
-  return order[0];
+  return order;
 };
 
 exports.updateOrderStatus = async (res, orderId, orderStatus, waiter) => {

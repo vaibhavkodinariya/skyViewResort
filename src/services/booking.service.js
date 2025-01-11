@@ -179,7 +179,7 @@ const updateBookings = async (
   if (checkInDate) booking.checkInDate = checkInDate;
   if (checkOutDate) booking.checkOutDate = checkOutDate;
   if (discount !== undefined) booking.discount = discount;
-  if (bookingStatus) booking.bookingStatus = bookingStatus;
+  if (bookingStatus) booking.status = bookingStatus;
 
   // Recalculate total price and GST if dates or rooms are updated
   const duration = Math.ceil(
@@ -220,7 +220,8 @@ const updateBookings = async (
     );
   }
 
-  return await booking.save();
+  await booking.save();
+  return;
 };
 
 module.exports = {

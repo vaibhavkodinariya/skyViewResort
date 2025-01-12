@@ -62,8 +62,9 @@ const updateOrder = Joi.object({
 });
 
 const updateStatus = Joi.object({
-  status: Joi.string().valid("Pending", "Completed").messages({
-    "any.only": "Status must be either 'Pending' or 'Completed'.",
+  status: Joi.string().valid("pending", "completed", "cancelled").messages({
+    "any.only":
+      "Status must be either 'pending' or 'completed' or 'cancelled'.",
     "string.base": "Status must be a string.",
   }),
 });

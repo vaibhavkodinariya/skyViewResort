@@ -36,6 +36,11 @@ const updateOrder = Joi.object({
   discount: Joi.number().min(0).messages({
     "number.min": "Discount amount must be positive",
   }),
+  status: Joi.string().valid("pending", "completed", "cancelled").messages({
+    "any.only":
+      "Status must be either 'pending' or 'completed' or 'cancelled'.",
+    "string.base": "Status must be a string.",
+  }),
   items: Joi.array()
     .items(
       Joi.object({

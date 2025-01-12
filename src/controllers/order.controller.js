@@ -27,12 +27,17 @@ const createOrder = catchAsync(async (req, res, next) => {
 });
 
 const getOrderById = catchAsync(async (req, res, next) => {
-  const tableNumber = req.params.id;
+  const order = req.params?.id;
+  const isParcel = req.query?.parcel;
   const orderStatus = req.query?.status;
-  const order = await OrderService.getOrderById(tableNumber, orderStatus);
+  const orderResponse = await OrderService.getOrderById(
+    order,
+    orderStatus,
+    isParcel
+  );
   res.status(status.OK).send(
     generateResponse(status.OK, {
-      order: order,
+      order: orderResponse,
       message: "Order Fetched Successfully",
     })
   );

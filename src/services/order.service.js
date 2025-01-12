@@ -44,12 +44,18 @@ exports.createOrder = async (orderData) => {
   return await order.save();
 };
 
-exports.getOrderById = async (tableNumber, orderStatus) => {
-  const matchQuery = { tableNumber: tableNumber };
+exports.getOrderById = async (order, orderStatus, isParcel) => {
+  const matchQuery = {};
+  if (isParcel == "1") {
+    matchQuery["_id"] = mongoose.Types.ObjectId(order);
+  } else {
+    matchQuery["tableNumber"] = order;
+  }
+
   if (orderStatus) {
     matchQuery["status"] = orderStatus;
   }
-  const order = await Order.aggregate([
+  return await Order.aggregate([
     { $match: matchQuery },
     {
       $lookup: {
@@ -128,8 +134,6 @@ exports.getOrderById = async (tableNumber, orderStatus) => {
     },
     { $project: { menuItems: 0 } }, // Exclude unnecessary field
   ]);
-
-  return order;
 };
 
 exports.updateOrderStatus = async (res, orderId, orderStatus, waiter) => {

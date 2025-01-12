@@ -28,7 +28,8 @@ const createOrder = catchAsync(async (req, res, next) => {
 
 const getOrderById = catchAsync(async (req, res, next) => {
   const tableNumber = req.params.id;
-  const order = await OrderService.getOrderById(tableNumber);
+  const orderStatus = req.query?.status;
+  const order = await OrderService.getOrderById(tableNumber, orderStatus);
   res.status(status.OK).send(
     generateResponse(status.OK, {
       order: order,
@@ -88,7 +89,6 @@ const billGeneration = catchAsync(async (req, res) => {
   const { orderId } = req.body;
   const orderList = await Order.findOne({
     _id: orderId,
-    status: "pending",
   })
     .populate("items.menuItem")
     .lean();

@@ -44,9 +44,13 @@ exports.createOrder = async (orderData) => {
   return await order.save();
 };
 
-exports.getOrderById = async (tableNumber) => {
+exports.getOrderById = async (tableNumber, orderStatus) => {
+  const matchQuery = { tableNumber: tableNumber };
+  if (orderStatus) {
+    matchQuery["status"] = orderStatus;
+  }
   const order = await Order.aggregate([
-    { $match: { tableNumber: tableNumber } },
+    { $match: matchQuery },
     {
       $lookup: {
         from: "menuitems",
@@ -146,7 +150,6 @@ exports.getAllOrders = async () => {
 
 exports.updateOrder = async (res, orderId, updateData) => {
   const order = await Order.findById(orderId);
-
   if (!order) {
     throw new ApiError(status.OK, "Order Not Found");
   }

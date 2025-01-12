@@ -10,9 +10,8 @@ exports.createOrder = async (orderData) => {
   if (orderData.tableNumber != "parcel") {
     const existingOrder = await Order.findOne({
       tableNumber: orderData.tableNumber,
-      status: "Pending",
+      status: "pending",
     }).lean();
-
     if (existingOrder) {
       throw new ApiError(
         status.BAD_REQUEST,

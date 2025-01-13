@@ -6,6 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Restaurant Bill</title>
     <style>
+        @media print {
+            .document {
+                width: 80mm;
+                margin: 0;
+                font-family: "Courier New", monospace;
+                font-size: 12px;
+            }
+
+            .container {
+                page-break-after: always;
+            }
+        }
+
         .document {
             font-family: "Courier New", monospace;
             font-size: 12px;
@@ -150,6 +163,7 @@
                 <p>Visit Again</p>
             </div>
         </div>
+        <!-- CUT -->
     </div>
 </body>
 

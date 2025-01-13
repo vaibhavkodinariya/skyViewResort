@@ -31,7 +31,7 @@ exports.createOrder = async (orderData) => {
   }
 
   const gstRate = config.gst.foodGst;
-  const gstAmount = totalAmount * gstRate;
+  const gstAmount = (totalAmount * gstRate).toFixed(2);
   totalAmount += gstAmount;
   // Create a new order
   const order = new Order({
@@ -180,7 +180,7 @@ exports.updateOrder = async (res, orderId, updateData) => {
   if (order.totalAmount != totalAmount) {
     const gstAmount = totalAmount * config.gst.foodGst;
     // Set the new total amount if recalculated
-    order.gstAmount = gstAmount;
+    order.gstAmount = gstAmount.toFixed(2);
     order.totalAmount = totalAmount;
   }
 

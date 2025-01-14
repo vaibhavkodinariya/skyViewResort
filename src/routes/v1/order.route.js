@@ -8,24 +8,24 @@ const router = express.Router();
 
 router.post(
   "/",
-  auth(roles.bhagwan, roles.waiter),
+  auth(roles.bhagwan, roles.restaurantManager, roles.waiter),
   validate({ body: orderValidations.createOrder }),
   orderController.createOrder
 );
 router.patch(
   "/:id",
-  auth(roles.bhagwan, roles.restaurantManager),
+  auth(roles.bhagwan, roles.restaurantManager, roles.waiter),
   validate({ body: orderValidations.updateStatus }),
   orderController.updateOrderStatus
 );
 router.get(
   "/:id",
-  auth(roles.bhagwan, roles.waiter, roles.restaurantManager),
+  auth(roles.bhagwan, roles.restaurantManager, roles.waiter),
   orderController.getOrderById
 );
 router.get(
   "/",
-  auth(roles.bhagwan, roles.restaurantManager, roles.admin),
+  auth(roles.bhagwan, roles.restaurantManager, roles.waiter),
   orderController.getAllOrders
 );
 router.put(

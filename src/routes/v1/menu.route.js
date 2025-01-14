@@ -25,7 +25,11 @@ router.put(
   validate({ body: menuValidator.updateMenuSchema }),
   menuItemController.updateMenuItem
 );
-router.get("/", auth(roles.bhagwan), menuItemController.getAllMenuItems);
+router.get(
+  "/",
+  auth(roles.bhagwan, roles.restaurantManager, roles.waiter),
+  menuItemController.getAllMenuItems
+);
 router.get("/:id", auth(roles.bhagwan), menuItemController.getMenuItemById);
 router.delete("/:id", auth(roles.bhagwan), menuItemController.deleteMenuItem);
 

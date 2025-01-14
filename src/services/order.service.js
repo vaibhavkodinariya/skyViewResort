@@ -32,7 +32,6 @@ exports.createOrder = async (orderData) => {
 
   const gstRate = config.gst.foodGst;
   const gstAmount = parseFloat((totalAmount * gstRate).toFixed(2));
-  totalAmount += gstAmount;
   // Create a new order
   const order = new Order({
     ...orderData,

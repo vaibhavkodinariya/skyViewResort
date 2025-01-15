@@ -133,7 +133,7 @@ const downloadBill = catchAsync(async (req, res) => {
     checkIn: booking.checkInDate.toDateString(),
     checkOut: booking.checkOutDate.toDateString(),
     invoiceNumber: `#${booking.invoiceNumber}`,
-    invoiceDate: new Date().toLocaleDateString(),
+    invoiceDate: new Date().toDateString(),
     paymentMethod: booking.paymentMethod,
     items: booking.rooms.map((room) => ({
       description: `Room: ${room.roomNumber}`,

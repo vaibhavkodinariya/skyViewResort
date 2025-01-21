@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { toJSON } = require("./plugins");
+const { tables } = require("../config/tables.js");
 const orderSchema = new mongoose.Schema(
   {
     orderNumber: {
@@ -9,6 +10,7 @@ const orderSchema = new mongoose.Schema(
     tableNumber: {
       type: String,
       required: true,
+      enum: tables,
     },
     waiter: {
       type: mongoose.Schema.Types.ObjectId,

@@ -8,12 +8,38 @@ const fs = require("fs");
 const path = require("path");
 const moment = require("moment");
 const config = require("../config/config");
+const { tables } = require("../config/tables");
 
 const compileTemplate = (filePath, data) => {
   const templateContent = fs.readFileSync(filePath, "utf-8");
   const compiledTemplate = hbs.compile(templateContent);
   return compiledTemplate(data);
 };
+
+const getAllTableStatus = catchAsync(async (req, res) => {
+  // Map through the tables array and check the status for each table
+  const tableStatuses = await Promise.all(
+    tables.map(async (tableNumber) => {
+      const pendingOrder = await Order.findOne({
+        tableNumber,
+        status: "pending",
+      });
+
+      return {
+        id: tableNumber,
+        name: tableNumber == "parcel" ? tableNumber : `Table ${tableNumber}`,
+        isEditAllowed: tableNumber == "parcel" ? false : true,
+        status: pendingOrder ? "pending" : "available",
+      };
+    })
+  );
+
+  return res.status(status.OK).send(
+    generateResponse(status.OK, {
+      tables: tableStatuses,
+    })
+  );
+});
 
 const createOrder = catchAsync(async (req, res, next) => {
   const orderData = req.body;
@@ -131,4 +157,5 @@ module.exports = {
   updateOrder,
   billGeneration,
   deleteOrder,
+  getAllTableStatus,
 };

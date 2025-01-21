@@ -44,5 +44,10 @@ router.post(
   auth(roles.bhagwan, roles.restaurantManager),
   orderController.billGeneration
 );
+router.post(
+  "/tables",
+  auth(roles.bhagwan, roles.restaurantManager),
+  orderController.getAllTableStatus
+);
 
 module.exports = router;

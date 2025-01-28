@@ -12,7 +12,6 @@ const menuSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["Starter", "Main Course", "Dessert", "Beverage"],
     },
     cuisine: {
       type: String,

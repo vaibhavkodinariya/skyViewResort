@@ -26,7 +26,6 @@ const logger = winston.createLogger({
     new winston.transports.File({
       filename: `logs/error-${moment().format("MM-DD-YYYY")}.log`,
       level: "error",
-      maxFiles: "15d",
     }),
   ],
 });

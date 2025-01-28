@@ -47,16 +47,16 @@ const getMenuItemById = catchAsync(async (req, res) => {
 const updateMenuItem = catchAsync(async (req, res) => {
   const photo = req.file ? `/uploads/menu/${req.file.filename}` : null;
   const { name, price, description, category, cuisine } = req.body;
+  console.log(req.body);
+  const item = {};
 
-  const item = {
-    name,
-    price,
-    description,
-    photo,
-    category,
-    cuisine,
-  };
-
+  if (name) item.name = name;
+  if (price) item.price = price;
+  if (description) item.description = description;
+  if (photo) item.photo = photo;
+  if (category) item.category = category;
+  if (cuisine) item.cuisine = cuisine;
+  console.log(item);
   const menuItem = await menuItemService.updateMenuItem(req.params.id, item);
   if (!menuItem) throw new ApiError(status.NOT_FOUND, "Menu item not found.");
   res.status(status.OK).send(

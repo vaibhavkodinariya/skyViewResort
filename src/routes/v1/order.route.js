@@ -46,7 +46,7 @@ router.post(
 );
 router.post(
   "/tables",
-  auth(roles.bhagwan, roles.restaurantManager),
+  auth(roles.bhagwan, roles.restaurantManager, roles.waiter),
   orderController.getAllTableStatus
 );
 

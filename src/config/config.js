@@ -19,6 +19,7 @@ const envVarsSchema = Joi.object()
     MONGOUSER: Joi.string().required().description("Mongo User"),
     MONGOPWD: Joi.string().required().description("Mongo Password"),
     JWT_SECRET: Joi.string().required().description("JWT secret key"),
+    SKY_VIEW_GST_NO: Joi.string().required().description("GST Number required"),
     JWT_ACCESS_EXPIRATION_MINUTES: Joi.number()
       .default(30)
       .description("minutes after which access tokens expire"),
@@ -47,6 +48,7 @@ module.exports = {
     foodGst: envVars.FOODGST,
     hotelGst: envVars.HOTELGST,
   },
+  skyViewGSTNo: envVars.SKY_VIEW_GST_NO,
   mongoose: {
     url: envVars.MONGO_URI + (envVars.NODE_ENV === "test" ? "-test" : ""),
     username: envVars.MONGOUSER,

@@ -128,6 +128,7 @@ const billGeneration = catchAsync(async (req, res) => {
     item["itemTotalAmount"] = item.quantity * item.menuItem.price;
   });
   orderList["hotelName"] = "Sky View Resort";
+  orderList["GSTNO"] = config.skyViewGSTNo;
   orderList["hotelAddress"] =
     "Sukhpar-Mankuva Highway, Tal. Bhuj, Dist. Kutch,370040";
   orderList["hotelPhone"] = "+91 9909866657 | 9909266657";

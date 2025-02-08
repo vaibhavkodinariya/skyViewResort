@@ -126,6 +126,7 @@ const billGeneration = catchAsync(async (req, res) => {
 
   orderList.items.map((item) => {
     item["itemTotalAmount"] = item.quantity * item.menuItem.price;
+    item["price"] = item.menuItem.price;
   });
   orderList["hotelName"] = "Sky View Resort";
   orderList["GSTNO"] = config.skyViewGSTNo;

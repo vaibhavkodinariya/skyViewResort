@@ -110,7 +110,8 @@
                     <tr>
                         <th class="item-name">Item</th>
                         <th class="item-qty text-right">Qty</th>
-                        <th class="item-price text-right">Price</th>
+                        <th class="item-qty text-right">Price</th>
+                        <th class="item-price text-right">Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -118,6 +119,7 @@
                     <tr>
                         <td>{{menuItem.name}}</td>
                         <td class="text-right">{{quantity}}</td>
+                        <td class="text-right">{{price}}</td>
                         <td class="text-right">₹{{itemTotalAmount}}</td>
                     </tr>
                     {{/each}}

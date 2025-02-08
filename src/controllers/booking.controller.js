@@ -146,9 +146,13 @@ const downloadBill = catchAsync(async (req, res) => {
     paymentMethod: booking.paymentMethod,
     items: booking.rooms.map((room) => ({
       description: `Room: ${room.roomNumber}`,
-      unitPrice: `${booking.totalPrice - booking.gstAmount} * ${duration}`,
+      unitPrice: `${
+        (booking.totalPrice - booking.gstAmount) / duration
+      } * ${duration}`,
       total:
-        ((booking.totalPrice - booking.gstAmount) / booking.rooms.length) *
+        ((booking.totalPrice - booking.gstAmount) /
+          booking.rooms.length /
+          duration) *
         duration,
     })),
     discount: booking.discount,

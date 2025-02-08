@@ -53,7 +53,7 @@
         .table th,
         .table td {
             text-align: left;
-            padding: 2px 0;
+            padding: 2px 3px;
         }
 
         .total-row {
@@ -127,21 +127,21 @@
                 <tfoot>
                     <tr class="total-row">
                         <td class="total-label">Subtotal</td>
-                        <td class="total-amount text-right" colspan="2">₹{{totalAmount}}</td>
+                        <td class="total-amount text-right" colspan="3">₹{{totalAmount}}</td>
                     </tr>
                     {{#if discount}}
                     <tr class="discount-row">
                         <td class="discount-label">Discount</td>
-                        <td class="discount-amount text-right" colspan="2">-₹{{discount}}</td>
+                        <td class="discount-amount text-right" colspan="3">-₹{{discount}}</td>
                     </tr>
                     {{/if}}
                     <tr class="gst-row">
                         <td class="gst-label">GST 5%</td>
-                        <td class="gst-amount text-right" colspan="2">₹{{gstAmount}}</td>
+                        <td class="gst-amount text-right" colspan="3">₹{{gstAmount}}</td>
                     </tr>
                     <tr class="total-row grand-total">
                         <td class="grand-total-label">Grand Total</td>
-                        <td class="grand-total-amount text-right" colspan="2">₹{{totalAmountPlusGST}}</td>
+                        <td class="grand-total-amount text-right" colspan="3">₹{{totalAmountPlusGST}}</td>
                     </tr>
                 </tfoot>
             </table>

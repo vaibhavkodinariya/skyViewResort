@@ -30,6 +30,8 @@ const addBooking = catchAsync(async (req, res) => {
     checkOutDate,
     paymentMethod,
     bookingStatus,
+    businessGSTIN,
+    businessName,
   } = req.body;
 
   await createBooking(
@@ -41,7 +43,9 @@ const addBooking = catchAsync(async (req, res) => {
     checkInDate,
     checkOutDate,
     paymentMethod,
-    bookingStatus
+    bookingStatus,
+    businessGSTIN,
+    businessName
   );
 
   res.status(status.CREATED).send(
@@ -86,7 +90,9 @@ const editBooking = catchAsync(async (req, res) => {
     req.body?.adhaarCard,
     req.body?.rooms,
     req.body?.paymentMethod,
-    req.body?.bookingStatus
+    req.body?.bookingStatus,
+    req.body?.businessGSTIN,
+    req.body?.businessName
   );
 
   res.status(status.OK).send(
@@ -128,7 +134,10 @@ const downloadBill = catchAsync(async (req, res) => {
     hotelName: "Sky View Resort",
     hotelAddress: "Sukhpar-Mankuva Highway, Tal. Bhuj, Dist. Kutch,370040",
     hotelPhone: "+91 9909866657 | 9909266657",
-    customerName: booking.customerName,
+    skyViewGSTNo: config.skyViewGSTNo,
+    businessName: booking?.businessName,
+    businessGSTIN: booking?.businessGSTIN,
+    customerName: booking?.customerName,
     roomNumber: booking.rooms.map((room) => room.roomNumber).join(", "),
     checkIn: booking.checkInDate.toDateString(),
     checkOut: booking.checkOutDate.toDateString(),

@@ -174,7 +174,15 @@
         <!-- Content -->
         <div class="content flex space-between margin-bottom">
             <div class="customer-details text-left">
+                {{#if customerName}}
                 <p class="details-paragraph"><strong>Customer Name:</strong> {{customerName}}</p>
+                {{/if}}
+                {{#if businessName}}
+                <p class="details-paragraph"><strong>Business Name:</strong> {{businessName}}</p>
+                {{/if}}
+                {{#if businessGSTIN}}
+                <p class="details-paragraph"><strong>Business GSTIN:</strong> {{businessGSTIN}}</p>
+                {{/if}}
                 <p class="details-paragraph"><strong>Room No:</strong> {{roomNumber}}</p>
                 <p class="details-paragraph"><strong>Check-in:</strong> {{checkIn}}</p>
                 <p class="details-paragraph"><strong>Check-out:</strong> {{checkOut}}</p>
@@ -183,6 +191,7 @@
                 <p class="details-paragraph"><strong>Invoice No:</strong> {{invoiceNumber}}</p>
                 <p class="details-paragraph"><strong>Date:</strong> {{invoiceDate}}</p>
                 <p class="details-paragraph"><strong>Payment Method:</strong> {{paymentMethod}}</p>
+                <p class="details-paragraph"><strong>GSTIN:</strong> {{skyViewGSTNo}}</p>
             </div>
         </div>
 

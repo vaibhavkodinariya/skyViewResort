@@ -14,7 +14,9 @@ const createBooking = async (
   checkInDate,
   checkOutDate,
   paymentMethod,
-  bookingStatus
+  bookingStatus,
+  businessGSTIN,
+  businessName
 ) => {
   // Fetch details of all rooms in the booking
   const rooms = await Room.find({ roomNumber: { $in: roomNumbers } });
@@ -75,6 +77,8 @@ const createBooking = async (
     paymentMethod,
     totalPrice: Math.round(totalPriceWithGST),
     status: bookingStatus,
+    businessGSTIN,
+    businessName,
   });
 
   // Update availability for all rooms
@@ -130,7 +134,9 @@ const updateBookings = async (
   adhaarCard,
   roomNumbers,
   paymentMethod,
-  bookingStatus
+  bookingStatus,
+  businessGSTIN,
+  businessName
 ) => {
   // Find the booking by ID and populate room details
   const booking = await Booking.findById(bookingId).populate("rooms.room");
@@ -180,6 +186,8 @@ const updateBookings = async (
   if (checkOutDate) booking.checkOutDate = checkOutDate;
   if (discount !== undefined) booking.discount = discount;
   if (bookingStatus) booking.status = bookingStatus;
+  if (businessGSTIN) booking.businessGSTIN = businessGSTIN;
+  if (businessName) booking.businessName = businessName;
 
   // Recalculate total price and GST if dates or rooms are updated
   const duration = Math.ceil(

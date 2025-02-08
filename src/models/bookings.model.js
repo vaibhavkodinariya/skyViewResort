@@ -7,6 +7,12 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    businessName: {
+      type: String,
+    },
+    businessGSTIN: {
+      type: String,
+    },
     customerPhone: {
       type: String,
       required: true,

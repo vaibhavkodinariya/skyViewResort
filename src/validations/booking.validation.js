@@ -8,6 +8,19 @@ const bookingSchema = Joi.object({
     "string.max": "Customer name should not exceed 50 characters",
     "any.required": "Customer name is required",
   }),
+
+  businessName: Joi.string()
+    .messages({
+      "string.empty": "Business Name cannot be empty",
+    })
+    .optional(),
+
+  businessGSTIN: Joi.string()
+    .messages({
+      "string.empty": "Business GSTIN cannot be empty",
+    })
+    .optional(),
+
   bookingStatus: Joi.string()
     .valid("pending", "confirmed", "completed", "cancelled")
     .messages({
@@ -15,6 +28,7 @@ const bookingSchema = Joi.object({
       "any.only":
         "Status must be one of ['pending', 'confirmed', 'completed', 'cancelled'].",
     }),
+
   adhaarCard: Joi.string()
     .length(12) // Aadhaar card must be 12 characters long
     .pattern(/^[0-9]{12}$/) // Only numeric values allowed
@@ -82,6 +96,15 @@ const updateBookingSchema = Joi.object({
       "any.only":
         "Status must be one of ['pending', 'confirmed', 'completed', 'cancelled'].",
     }),
+
+  businessName: Joi.string().messages({
+    "string.empty": "Business Name cannot be empty",
+  }),
+
+  businessGSTIN: Joi.string().messages({
+    "string.empty": "Business GSTIN cannot be empty",
+  }),
+
   discount: Joi.number().min(0).messages({
     "number.min": "Discount amount must be positive",
   }),
@@ -118,11 +141,13 @@ const updateBookingSchema = Joi.object({
     "customerPhone",
     "checkInDate",
     "checkOutDate",
-    "discount"
+    "discount",
+    "businessGSTIN",
+    "businessName"
   )
   .messages({
     "object.missing":
-      "At least one of customerName, customerPhone, checkInDate, or checkOutDate is required",
+      "At least one of customerName,businessGSTIN,businessName, discount, customerPhone, checkInDate, or checkOutDate is required",
   });
 
 const validateBookingId = Joi.object({

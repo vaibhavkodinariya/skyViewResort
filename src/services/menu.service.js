@@ -10,15 +10,15 @@ async function createMenuItem(data) {
 }
 
 async function getAllMenuItems() {
-  return await MenuItem.find();
+  return await MenuItem.find().lean();
 }
 
 async function getMenuItemById(id) {
-  return await MenuItem.findById(id);
+  return await MenuItem.findById(id).lean();
 }
 
 async function updateMenuItem(id, data) {
-  const existingMenuItem = await MenuItem.findById(id);
+  const existingMenuItem = await MenuItem.findById(id).lean();
 
   if (!existingMenuItem)
     throw new ApiError(status.NOT_FOUND, "Menu item not found");

@@ -26,6 +26,7 @@ const app = express();
   }
 
   // Security & performance middlewares
+  app.set("trust proxy", true);
   app.use(helmet());
   app.use(express.json());
   app.use(bodyParser.json());
@@ -33,7 +34,6 @@ const app = express();
   app.use(mongoSanitize());
   app.use(compression());
   app.use(cors());
-
   app.use("/v1/auth", loginRoutes);
 
   // JWT authentication setup

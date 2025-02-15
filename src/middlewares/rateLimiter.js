@@ -6,8 +6,8 @@ const status = require("http-status");
 // Moderate security rate limit settings
 const RATE_LIMITS = {
   WINDOW_MS: 5 * 60 * 1000, // 5 minutes window
-  MAX_REQUESTS: 10, // 150 requests per window
-  BLOCK_DURATION: 15 * 60, // 15 minutes block
+  MAX_REQUESTS: 5, // 150 requests per window
+  BLOCK_DURATION:  24 * 60 * 60, // 24 hours block
 };
 
 async function createRedisClient() {

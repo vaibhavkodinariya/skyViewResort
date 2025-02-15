@@ -34,7 +34,7 @@ const app = express();
   app.use(compression());
   app.use(cors());
 
-  app.use(loginRoutes);
+  app.use("/v1/auth", loginRoutes);
 
   // JWT authentication setup
   app.use(passport.initialize());

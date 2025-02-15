@@ -13,10 +13,6 @@ const menuSchema = new mongoose.Schema(
     category: {
       type: String,
     },
-    cuisine: {
-      type: String,
-      enum: ["Indian", "Chinese", "Italian", "Mexican"],
-    },
     photo: {
       type: String,
       required: false,

@@ -11,6 +11,7 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: tables,
+      index: true,
     },
     waiter: {
       type: mongoose.Schema.Types.ObjectId,
@@ -52,6 +53,7 @@ const orderSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "completed", "cancelled"],
       default: "pending",
+      index: true,
     },
     customerName: {
       type: String,
@@ -66,8 +68,17 @@ const orderSchema = new mongoose.Schema(
       enum: ["cash", "upi"],
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    autoCreate: true, // Ensures collection and indexes are created on first use
+    autoIndex: true, // Automatically builds indexes (disable in production if needed)
+  }
 );
+
+// Create a compound index for frequent queries
+orderSchema.index({ orderNumber: 1, status: 1 });
+orderSchema.index({ waiter: 1, status: 1 });
+orderSchema.index({ tableNumber: 1, status: 1 });
 
 // Static property to hold the current order number
 orderSchema.statics.currentOrderNumber = 0;

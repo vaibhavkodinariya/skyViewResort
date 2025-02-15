@@ -23,7 +23,7 @@ const getAllTableStatus = catchAsync(async (req, res) => {
       const pendingOrder = await Order.findOne({
         tableNumber,
         status: "pending",
-      });
+      }).lean();
 
       return {
         id: tableNumber,

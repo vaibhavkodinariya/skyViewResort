@@ -67,6 +67,7 @@ const bookingSchema = new mongoose.Schema(
     invoiceNumber: {
       type: Number,
       unique: true,
+      index: true,
     },
     paymentMethod: {
       type: String,
@@ -76,12 +77,14 @@ const bookingSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    autoCreate: true, // Ensures indexes are created when the model is first used
+    autoIndex: true, // Automatically builds indexes (disable in production if needed)
   }
 );
 
 bookingSchema.plugin(toJSON);
 bookingSchema.statics.generateInvoiceNumber = async function () {
-  const lastBooking = await this.findOne().sort({ invoiceNumber: -1 });
+  const lastBooking = await this.findOne().sort({ invoiceNumber: -1 }).lean();
   return lastBooking ? lastBooking.invoiceNumber + 1 : 1;
 };
 

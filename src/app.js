@@ -8,8 +8,9 @@ const status = require("http-status");
 const config = require("./config/config");
 const morgan = require("./config/morgan");
 const { jwtStrategy } = require("./config/passport");
-const { authLimiter } = require("./middlewares/rateLimiter");
+const setupRateLimiter = require("./middlewares/rateLimiter");
 const routes = require("./routes/v1");
+const loginRoutes = require("./routes/v1/auth.route");
 const { errorConverter, errorHandler } = require("./middlewares/error");
 const ApiError = require("./utils/ApiError");
 const path = require("path");
@@ -17,49 +18,45 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
-if (config.env !== "test") {
-  app.use(morgan.successHandler);
-  app.use(morgan.errorHandler);
-}
+// Self-invoking async function to initialize app
+(async () => {
+  if (config.env !== "test") {
+    app.use(morgan.successHandler);
+    app.use(morgan.errorHandler);
+  }
 
-// set security HTTP headers
-app.use(helmet());
+  // Security & performance middlewares
+  app.use(helmet());
+  app.use(express.json());
+  app.use(bodyParser.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(mongoSanitize());
+  app.use(compression());
+  app.use(cors());
 
-// parse json request body
-app.use(express.json());
-app.use(bodyParser.json());
+  app.use("/v1/auth", loginRoutes);
 
-// parse urlencoded request body
-app.use(express.urlencoded({ extended: true }));
-// sanitize request data
-app.use(mongoSanitize());
+  // JWT authentication setup
+  app.use(passport.initialize());
+  passport.use("jwt", jwtStrategy);
 
-// gzip compression
-app.use(compression());
+  // Serve static files
+  app.use(express.static(path.join(__dirname, "public")));
 
-// enable cors
-app.use(cors());
+  const secureLimiter = await setupRateLimiter();
+  app.use(secureLimiter);
 
-// jwt authentication
-app.use(passport.initialize());
-passport.use("jwt", jwtStrategy);
+  // API Routes
+  app.use("/v1", routes);
 
-app.use(express.static(path.join(__dirname, "public")));
+  // Handle unknown routes
+  app.use((req, res, next) => {
+    next(new ApiError(status.NOT_FOUND, "Not found"));
+  });
 
-app.use(authLimiter);
-
-app.get("/favicon.ico", (req, res) => res.status(204).send());
-// v1 api routes
-app.use("/v1", routes);
-// send back a 404 error for any unknown api request
-app.use((req, res, next) => {
-  next(new ApiError(status.NOT_FOUND, "Not found"));
-});
-
-// convert error to ApiError, if needed
-app.use(errorConverter);
-
-// handle error
-app.use(errorHandler);
+  // Error handling middleware
+  app.use(errorConverter);
+  app.use(errorHandler);
+})();
 
 module.exports = app;

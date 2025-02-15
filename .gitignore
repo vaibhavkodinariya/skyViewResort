@@ -8,3 +8,4 @@ node_modules
 src/public
 mongo-data
 logs
+src/test.js

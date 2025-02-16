@@ -19,7 +19,7 @@ const createBooking = async (
   businessName
 ) => {
   // Fetch details of all rooms in the booking
-  const rooms = await Room.find({ roomNumber: { $in: roomNumbers } });
+  const rooms = await Room.find({ roomNumber: { $in: roomNumbers } }).lean();
 
   if (rooms.length !== roomNumbers.length) {
     throw new ApiError(status.OK, "One or more rooms not found");
@@ -35,9 +35,9 @@ const createBooking = async (
           checkOutDate: { $gte: checkInDate },
         },
       ],
-    });
+    }).lean();
 
-    if (conflictingBooking && !room.availability) {
+    if (conflictingBooking) {
       throw new ApiError(
         status.BAD_REQUEST,
         `Room ${room.roomNumber} is already booked for the selected dates`
@@ -81,11 +81,6 @@ const createBooking = async (
     businessName,
   });
 
-  // Update availability for all rooms
-  for (const room of rooms) {
-    room.availability = false;
-    await room.save();
-  }
   return;
 };
 
@@ -216,20 +211,7 @@ const updateBookings = async (
   booking.gstAmount = gstAmount;
   booking.totalPrice = Math.round(totalPriceWithGST);
 
-  // Update room availability efficiently
-  if (roomNumbers) {
-    await Room.updateMany(
-      { _id: { $in: currentRoomIds } },
-      { availability: true }
-    );
-    await Room.updateMany(
-      { _id: { $in: updatedRoomIds } },
-      { availability: false }
-    );
-  }
-
-  await booking.save();
-  return;
+  return await booking.save();
 };
 
 module.exports = {

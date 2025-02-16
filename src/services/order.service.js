@@ -148,7 +148,7 @@ exports.updateOrderStatus = async (res, orderId, orderStatus, waiter) => {
 };
 
 exports.getAllOrders = async () => {
-  return await Order.find();
+  return await Order.find().lean();
 };
 
 exports.updateOrder = async (res, orderId, updateData) => {

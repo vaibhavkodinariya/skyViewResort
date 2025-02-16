@@ -120,7 +120,9 @@ const billGeneration = catchAsync(async (req, res) => {
   const { orderId } = req.body;
   const orderList = await Order.findOne({
     _id: orderId,
-  }).populate("items.menuItem");
+  })
+    .populate("items.menuItem")
+    .lean();
   orderList.items.map((item) => {
     item["itemTotalAmount"] = item.quantity * item.menuItem.price;
     item["price"] = item.menuItem.price;

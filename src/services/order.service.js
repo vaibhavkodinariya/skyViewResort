@@ -11,7 +11,7 @@ exports.createOrder = async (orderData) => {
     const existingOrder = await Order.findOne({
       tableNumber: orderData.tableNumber,
       status: "pending",
-    }).lean();
+    });
     if (existingOrder) {
       throw new ApiError(
         status.BAD_REQUEST,
@@ -23,7 +23,7 @@ exports.createOrder = async (orderData) => {
   let totalAmount = 0;
   // Calculate the total amount
   for (const item of orderData.items) {
-    const menuItem = await MenuItem.findById(item.menuItem).lean();
+    const menuItem = await MenuItem.findById(item.menuItem);
     if (!menuItem) {
       throw new Error(`Menu item with ID ${item.menuItem} not found.`);
     }
@@ -136,7 +136,7 @@ exports.getOrderById = async (order, orderStatus, isParcel) => {
 };
 
 exports.updateOrderStatus = async (res, orderId, orderStatus, waiter) => {
-  const order = await Order.findById(orderId).lean();
+  const order = await Order.findById(orderId);
   if (!order) {
     return res
       .status(status.OK)
@@ -148,11 +148,11 @@ exports.updateOrderStatus = async (res, orderId, orderStatus, waiter) => {
 };
 
 exports.getAllOrders = async () => {
-  return await Order.find().lean();
+  return await Order.find();
 };
 
 exports.updateOrder = async (res, orderId, updateData) => {
-  const order = await Order.findById(orderId).lean();
+  const order = await Order.findById(orderId);
   if (!order) {
     throw new ApiError(status.OK, "Order Not Found");
   }
@@ -162,7 +162,7 @@ exports.updateOrder = async (res, orderId, updateData) => {
   if (updateData.items?.length) {
     totalAmount = 0;
     for (const item of updateData.items) {
-      const menuItem = await MenuItem.findById(item.menuItem).lean();
+      const menuItem = await MenuItem.findById(item.menuItem);
       totalAmount += menuItem.price * item.quantity;
     }
   }

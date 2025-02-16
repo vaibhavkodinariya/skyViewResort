@@ -23,7 +23,7 @@ const getAllTableStatus = catchAsync(async (req, res) => {
       const pendingOrder = await Order.findOne({
         tableNumber,
         status: "pending",
-      }).lean();
+      });
 
       return {
         id: tableNumber,
@@ -120,10 +120,7 @@ const billGeneration = catchAsync(async (req, res) => {
   const { orderId } = req.body;
   const orderList = await Order.findOne({
     _id: orderId,
-  })
-    .populate("items.menuItem")
-    .lean();
-
+  }).populate("items.menuItem");
   orderList.items.map((item) => {
     item["itemTotalAmount"] = item.quantity * item.menuItem.price;
     item["price"] = item.menuItem.price;

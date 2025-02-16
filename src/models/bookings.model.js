@@ -84,7 +84,7 @@ const bookingSchema = new mongoose.Schema(
 
 bookingSchema.plugin(toJSON);
 bookingSchema.statics.generateInvoiceNumber = async function () {
-  const lastBooking = await this.findOne().sort({ invoiceNumber: -1 }).lean();
+  const lastBooking = await this.findOne().sort({ invoiceNumber: -1 });
   return lastBooking ? lastBooking.invoiceNumber + 1 : 1;
 };
 

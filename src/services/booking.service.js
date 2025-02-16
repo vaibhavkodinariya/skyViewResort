@@ -19,7 +19,7 @@ const createBooking = async (
   businessName
 ) => {
   // Fetch details of all rooms in the booking
-  const rooms = await Room.find({ roomNumber: { $in: roomNumbers } }).lean();
+  const rooms = await Room.find({ roomNumber: { $in: roomNumbers } });
 
   if (rooms.length !== roomNumbers.length) {
     throw new ApiError(status.OK, "One or more rooms not found");
@@ -35,7 +35,7 @@ const createBooking = async (
           checkOutDate: { $gte: checkInDate },
         },
       ],
-    }).lean();
+    });
 
     if (conflictingBooking) {
       throw new ApiError(
@@ -85,9 +85,7 @@ const createBooking = async (
 };
 
 const getBookings = async (res) => {
-  const bookings = await Booking.find()
-    .populate("rooms", "roomNumber price")
-    .lean();
+  const bookings = await Booking.find().populate("rooms", "roomNumber price");
   if (!bookings.length) {
     return res
       .status(status.OK)
@@ -104,10 +102,10 @@ const roomWiseBooking = async (res, roomNumber) => {
     return generateResponse(status.NOT_FOUND, { message: "Room not found" });
   }
 
-  const bookings = await Booking.find({ rooms: { $in: [room._id] } })
-    .populate("rooms", "roomNumber price")
-    .lean();
-
+  const bookings = await Booking.find({ rooms: { $in: [room._id] } }).populate(
+    "rooms",
+    "roomNumber price"
+  );
   if (!bookings?.length) {
     return generateResponse(status.NOT_FOUND, {
       message: "No bookings found for this room",
@@ -135,10 +133,7 @@ const updateBookings = async (
   businessName
 ) => {
   // Find the booking by ID and populate room details
-  const booking = await Booking.findById(bookingId)
-    .populate("rooms.room")
-    .lean();
-
+  const booking = await Booking.findById(bookingId).populate("rooms.room");
   if (!booking) {
     throw new ApiError(status.OK, "Booking not found");
   }
@@ -148,7 +143,7 @@ const updateBookings = async (
   // Check for room updates
   let updatedRoomIds = currentRoomIds;
   if (roomNumbers && roomNumbers.length > 0) {
-    const rooms = await Room.find({ roomNumber: { $in: roomNumbers } }).lean();
+    const rooms = await Room.find({ roomNumber: { $in: roomNumbers } });
 
     if (rooms.length !== roomNumbers.length) {
       throw new ApiError(status.OK, "One or more rooms not found");
@@ -164,7 +159,7 @@ const updateBookings = async (
           checkOutDate: { $gt: checkInDate || booking.checkInDate },
         },
       ],
-    }).lean();
+    });
 
     if (conflictingBookings) {
       throw new ApiError(
@@ -201,7 +196,7 @@ const updateBookings = async (
     );
   }
 
-  const rooms = await Room.find({ _id: { $in: updatedRoomIds } }).lean();
+  const rooms = await Room.find({ _id: { $in: updatedRoomIds } });
   const totalRoomPrice = rooms.reduce(
     (sum, room) => sum + room.price * duration,
     0

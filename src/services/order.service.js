@@ -136,7 +136,7 @@ exports.getOrderById = async (order, orderStatus, isParcel) => {
 };
 
 exports.updateOrderStatus = async (res, orderId, orderStatus, waiter) => {
-  const order = await Order.findById(orderId);
+  const order = await Order.findById(orderId).lean();
   if (!order) {
     return res
       .status(status.OK)
@@ -152,7 +152,7 @@ exports.getAllOrders = async () => {
 };
 
 exports.updateOrder = async (res, orderId, updateData) => {
-  const order = await Order.findById(orderId);
+  const order = await Order.findById(orderId).lean();
   if (!order) {
     throw new ApiError(status.OK, "Order Not Found");
   }

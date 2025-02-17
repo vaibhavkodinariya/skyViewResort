@@ -1,6 +1,6 @@
 const winston = require("winston");
 const config = require("./config");
-const moment = require("moment");
+const moment = require("moment-timezone");
 
 const enumerateErrorFormat = winston.format((info) => {
   if (info instanceof Error) {
@@ -8,6 +8,10 @@ const enumerateErrorFormat = winston.format((info) => {
   }
   return info;
 });
+
+// Custom timestamp function for 12-hour format with AM/PM
+const timestampFormat = () =>
+  moment().tz("Asia/Kolkata").format("YYYY-MM-DD hh:mm:ss A");
 
 const logger = winston.createLogger({
   level: config.env === "development" ? "debug" : "info",
@@ -17,14 +21,19 @@ const logger = winston.createLogger({
       ? winston.format.colorize()
       : winston.format.uncolorize(),
     winston.format.splat(),
-    winston.format.printf(({ level, message }) => `${level}: ${message}`)
+    winston.format.timestamp({ format: timestampFormat }), // Add timestamp
+    winston.format.printf(
+      ({ timestamp, level, message }) => `[${timestamp}] ${level}: ${message}`
+    )
   ),
   transports: [
     new winston.transports.Console({
       stderrLevels: ["error"],
     }),
     new winston.transports.File({
-      filename: `logs/error-${moment().format("MM-DD-YYYY")}.log`,
+      filename: `logs/error-${moment()
+        .tz("Asia/Kolkata")
+        .format("MM-DD-YYYY")}.log`,
       level: "error",
     }),
   ],

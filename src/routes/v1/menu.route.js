@@ -20,7 +20,7 @@ router.post(
 );
 router.put(
   "/:id",
-  auth(roles.bhagwan),
+  auth(roles.bhagwan, roles.restaurantManager),
   uploadMiddleware({ folderName: "menu", singleUpload: true }),
   validate({ body: menuValidator.updateMenuSchema }),
   menuItemController.updateMenuItem
@@ -31,6 +31,10 @@ router.get(
   menuItemController.getAllMenuItems
 );
 router.get("/:id", auth(roles.bhagwan), menuItemController.getMenuItemById);
-router.delete("/:id", auth(roles.bhagwan), menuItemController.deleteMenuItem);
+router.delete(
+  "/:id",
+  auth(roles.bhagwan, roles.restaurantManager),
+  menuItemController.deleteMenuItem
+);
 
 module.exports = router;
